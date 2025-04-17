@@ -1,7 +1,4 @@
 FROM golang:latest
-
-# Utilise l'image officielle Go
-FROM golang:1.24
  
 # Création dossier app
 WORKDIR /app
