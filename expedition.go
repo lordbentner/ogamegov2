@@ -8,34 +8,6 @@ import (
 	"github.com/alaingilbert/ogame/pkg/wrapper"
 )
 
-type Fleet struct {
-	SmallCargo     int // Petit transporteur
-	LargeCargo     int // Grand transporteur
-	LightFighter   int // Chasseur léger
-	EspionageProbe int // Sonde d'espionnage
-	Pathfinder     int // Éclaireur
-}
-
-type Planet struct {
-	Name           string
-	Coordinates    string
-	Fleet          Fleet
-	MaxExpeditions int
-}
-
-type Expedition struct {
-	Planet string
-	Target string
-	Fleet  Fleet
-}
-
-/*type Slots struct {
-	InUse    int64
-	Total    int64
-	ExpInUse int64
-	ExpTotal int64
-}*/
-
 func GetFleetsForCargo(bot *wrapper.OGame) (int, int, int) {
 	GT := 0
 	PT := 0
@@ -122,15 +94,7 @@ func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGam
 	return false
 }
 
-func SetExpedition(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGame) {
-	sh, _ := bot.GetShips(id)
-	slots, _ := bot.GetSlots()
-	if slots.ExpInUse >= slots.ExpTotal || sh.SmallCargo == 0 /*|| sh.EspionageProbe == 0 || sh.Pathfinder == 0*/ {
-		return
-	}
-
-	slotDispo := slots.ExpTotal - slots.ExpInUse
-
+func getFleetCompositionForExplo(sh ogame.ShipsInfos, slotDispo int64) ogame.ShipsInfos {
 	var shipsInfos ogame.ShipsInfos
 	if sh.EspionageProbe < 10 {
 		shipsInfos.EspionageProbe = sh.EspionageProbe
@@ -169,6 +133,19 @@ func SetExpedition(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OG
 		shipsInfos.LargeCargo++
 	}
 
+	return shipsInfos
+}
+
+func SetExpedition(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGame) {
+	sh, _ := bot.GetShips(id)
+	slots, _ := bot.GetSlots()
+	if slots.ExpInUse >= slots.ExpTotal || sh.SmallCargo == 0 /*|| sh.EspionageProbe == 0 || sh.Pathfinder == 0*/ {
+		return
+	}
+
+	slotDispo := slots.ExpTotal - slots.ExpInUse
+	shipsInfos := getFleetCompositionForExplo(sh, slotDispo)
+
 	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System, Position: 16}
 	bot.SendFleet(id, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
 	fmt.Printf("fleet send to expedition from %s with this fleet: %s\n", coord.String(), shipsInfos)
@@ -189,7 +166,3 @@ func getTotalGTCombine(empire []ogame.EmpireCelestial, empireMoon []ogame.Empire
 	fmt.Printf("GT Total = %d\n", total)
 	return total
 }
-
-/*func testExpe() {
-	total := getTotalGTCombine
-}*/
