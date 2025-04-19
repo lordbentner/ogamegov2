@@ -151,6 +151,14 @@ func SetExpedition(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OG
 		shipsInfos.Destroyer = 1
 	} else if sh.Battlecruiser > 0 {
 		shipsInfos.Battlecruiser = 1
+	} else if sh.Battleship > 0 {
+		shipsInfos.Battleship = 1
+	} else if sh.Pathfinder < 1 {
+		if sh.Cruiser > 0 {
+			shipsInfos.Cruiser = 1
+		} else if sh.HeavyFighter > 0 {
+			shipsInfos.HeavyFighter = 1
+		}
 	}
 
 	if shipsInfos.SmallCargo == 0 && sh.SmallCargo > 0 {
@@ -163,7 +171,7 @@ func SetExpedition(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OG
 
 	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System, Position: 16}
 	bot.SendFleet(id, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
-	fmt.Printf("fleet send to expedition from %s\n", coord.String())
+	fmt.Printf("fleet send to expedition from %s with this fleet: %s\n", coord.String(), shipsInfos)
 	printShipsInfos(shipsInfos)
 	time.Sleep(5000)
 }
