@@ -161,7 +161,7 @@ func main() {
 		ScreenColorDepth(24).
 		SetScreenWidth(1900).
 		SetScreenHeight(900).
-		SetTimezone("Europe/Los_Angeles").
+		SetTimezone("America/Los_Angeles").
 		SetLanguages("en-US,en").
 		Build()
 
