@@ -22,13 +22,17 @@ func printFleets(fleet ogame.Fleet) {
 }
 
 func buildResources(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
-	Researches(planete, bot)
 	time.Sleep(10000)
 	fmt.Println(planete.Supplies)
 	resDetails, _ := bot.GetResourcesDetails(planete.ID)
 	fmt.Println("Metal Storage Capacity:")
 	fmt.Println(resDetails.Metal.StorageCapacity)
-	//bot.BuildBuilding(planete.ID, ogame.RoboticsFactoryID)
+	if planete.Facilities.RoboticsFactory < 10 {
+		bot.BuildBuilding(planete.ID, ogame.RoboticsFactoryID)
+	} else {
+		bot.BuildBuilding(planete.ID, ogame.NaniteFactoryID)
+	}
+
 	if planete.Resources.Energy < 0 {
 		bot.BuildBuilding(planete.ID, ogame.SolarPlantID)
 		fmt.Println("construction solar plant ")
@@ -69,7 +73,7 @@ func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	bot.BuildTechnology(id, ogame.AstrophysicsID)
 	fmt.Println("Recherche...")
 
-	if res.ImpulseDrive < 4 {
+	if res.ImpulseDrive < 5 {
 		bot.BuildTechnology(id, ogame.ImpulseDriveID)
 	}
 
@@ -120,6 +124,8 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		fmt.Println(empire)
 		return
 	}
+
+	Researches(empire[0], bot)
 	//	planetLife := empire[0]
 	//trouve := false
 	for _, planete := range empire {
@@ -151,6 +157,8 @@ func main() {
 	username := os.Getenv("USERNAME") // eg: email@gmail.com
 	password := os.Getenv("PASSWORD")
 	language := os.Getenv("LANGUAGE")
+
+	fmt.Printf("Paramètres utilisateur récupéré => univers: %s username: %s mdp:%s language: %s\n", universe, username, password, language)
 
 	deviceName := "DEVICE-NAME"
 	deviceInst, err := device.NewBuilder(deviceName).
