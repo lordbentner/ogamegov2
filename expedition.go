@@ -125,9 +125,11 @@ func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGam
 func SetExpedition(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGame) {
 	sh, _ := bot.GetShips(id)
 	slots, _ := bot.GetSlots()
-	if slots.ExpInUse >= slots.ExpTotal || sh.EspionageProbe == 0 || sh.Pathfinder == 0 {
+	if slots.ExpInUse >= slots.ExpTotal || sh.SmallCargo == 0 /*|| sh.EspionageProbe == 0 || sh.Pathfinder == 0*/ {
 		return
 	}
+
+	slotDispo := slots.ExpTotal - slots.ExpInUse
 
 	var shipsInfos ogame.ShipsInfos
 	if sh.EspionageProbe < 10 {
@@ -136,13 +138,27 @@ func SetExpedition(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OG
 		shipsInfos.EspionageProbe = 10
 	}
 
-	shipsInfos.LargeCargo = sh.LargeCargo
-	shipsInfos.SmallCargo = sh.SmallCargo
+	shipsInfos.LargeCargo = sh.LargeCargo / slotDispo
+	shipsInfos.SmallCargo = sh.SmallCargo / slotDispo
+	shipsInfos.Pathfinder = sh.Pathfinder / slotDispo
+	if slotDispo == 1 {
+		shipsInfos.LargeCargo = sh.LargeCargo
+		shipsInfos.SmallCargo = sh.SmallCargo
+		shipsInfos.Pathfinder = sh.Pathfinder
+	}
 	shipsInfos.Pathfinder = sh.Pathfinder
 	if sh.Destroyer > 0 {
 		shipsInfos.Destroyer = 1
 	} else if sh.Battlecruiser > 0 {
 		shipsInfos.Battlecruiser = 1
+	}
+
+	if shipsInfos.SmallCargo == 0 && sh.SmallCargo > 0 {
+		shipsInfos.SmallCargo++
+	}
+
+	if shipsInfos.LargeCargo == 0 && sh.LargeCargo > 0 {
+		shipsInfos.LargeCargo++
 	}
 
 	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System, Position: 16}

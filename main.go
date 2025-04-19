@@ -22,24 +22,85 @@ func printFleets(fleet ogame.Fleet) {
 }
 
 func buildResources(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
+	Researches(planete, bot)
+	time.Sleep(10000)
 	fmt.Println(planete.Supplies)
-	bot.BuildBuilding(planete.ID, ogame.RoboticsFactoryID)
+	resDetails, _ := bot.GetResourcesDetails(planete.ID)
+	fmt.Println("Metal Storage Capacity:")
+	fmt.Println(resDetails.Metal.StorageCapacity)
+	//bot.BuildBuilding(planete.ID, ogame.RoboticsFactoryID)
 	if planete.Resources.Energy < 0 {
 		bot.BuildBuilding(planete.ID, ogame.SolarPlantID)
 		fmt.Println("construction solar plant ")
-	} else if planete.Supplies.DeuteriumSynthesizer < int64(planete.Supplies.CrystalMine-4) {
-		bot.BuildBuilding(planete.ID, ogame.DeuteriumSynthesiserID)
-		fmt.Println("construction synthethiseur deuterium ")
-	} else if planete.Supplies.CrystalMine < int64(planete.Supplies.MetalMine-4) {
-		bot.BuildBuilding(planete.ID, ogame.CrystalMineID)
-		fmt.Println("construction crystal mine")
+	} else if planete.Supplies.DeuteriumSynthesizer < int64(planete.Supplies.CrystalMine-3) {
+		err := bot.BuildBuilding(planete.ID, 3)
+		fmt.Printf("construction synthethiseur deuterium err =%s\n", err)
+	} else if planete.Supplies.CrystalMine < int64(planete.Supplies.MetalMine-3) {
+		err := bot.BuildBuilding(planete.ID, 2)
+		fmt.Printf("construction crystal mine err =%s\n", err)
 	} else {
-		bot.BuildBuilding(planete.ID, ogame.MetalMineID)
-		fmt.Println("construction metal mine")
-		bot.BuildBuilding(planete.ID, ogame.MetalStorageID)
+		err := bot.BuildBuilding(planete.ID, 1)
+		fmt.Printf("construction metal mine err =%s\n", err)
+		/*bot.BuildBuilding(planete.ID, ogame.MetalStorageID)
 		bot.BuildBuilding(planete.ID, ogame.CrystalStorageID)
-		bot.BuildBuilding(planete.ID, ogame.DeuteriumTankID)
+		bot.BuildBuilding(planete.ID, ogame.DeuteriumTankID)*/
 	}
+
+	if resDetails.Crystal.StorageCapacity-resDetails.Crystal.StorageCapacity/10 < planete.Resources.Crystal {
+		bot.BuildBuilding(planete.ID, ogame.CrystalStorageID)
+	} else if resDetails.Deuterium.StorageCapacity-resDetails.Deuterium.StorageCapacity/10 < planete.Resources.Deuterium {
+		bot.BuildBuilding(planete.ID, ogame.DeuteriumTankID)
+	} else if resDetails.Metal.StorageCapacity-resDetails.Metal.StorageCapacity/10 < planete.Resources.Metal {
+		bot.BuildBuilding(planete.ID, ogame.MetalStorageID)
+	}
+
+}
+
+func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
+	res, _ := bot.GetResearch()
+	fmt.Println(res)
+	id := planete.ID
+	fac, _ := bot.GetFacilities(id)
+
+	if fac.ResearchLab < 12 {
+		bot.BuildBuilding(id, ogame.ResearchLabID)
+	}
+
+	bot.BuildTechnology(id, ogame.AstrophysicsID)
+	fmt.Println("Recherche...")
+
+	if res.ImpulseDrive < 4 {
+		bot.BuildTechnology(id, ogame.ImpulseDriveID)
+	}
+
+	if res.EspionageTechnology < 5 {
+		bot.BuildTechnology(id, ogame.EspionageTechnologyID)
+	}
+
+	//bot.BuildTechnology(id, ogame.ComputerTechnologyID)
+	bot.BuildTechnology(id, ogame.IntergalacticResearchNetworkID)
+	bot.BuildTechnology(id, ogame.CombustionDriveID)
+	bot.BuildTechnology(id, ogame.ArmourTechnologyID)
+
+	/*if res.EnergyTechnology < 12 {
+		bot.BuildTechnology(id, ogame.EnergyTechnologyID)
+	}*/
+
+	/*if res.LaserTechnology < 10 {
+		bot.BuildTechnology(id, ogame.LaserTechnologyID)
+	}
+
+	if res.IonTechnology < 5 {
+		bot.BuildTechnology(id, ogame.IonTechnologyID)
+	}
+
+	if res.HyperspaceTechnology < 8 {
+		bot.BuildTechnology(id, ogame.HyperspaceTechnologyID)
+	}
+
+	bot.BuildTechnology(id, ogame.PlasmaTechnologyID)
+	bot.BuildTechnology(id, ogame.WeaponsTechnologyID)
+	bot.BuildTechnology(id, ogame.ShieldingTechnology.ID)*/
 }
 
 func getFlottePourExpe(bot *wrapper.OGame) {
@@ -62,8 +123,12 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	//	planetLife := empire[0]
 	//trouve := false
 	for _, planete := range empire {
-		SetExpedition(planete.ID, planete.Coordinate, bot)
+		buildingID, buildingCountdown, researchID, researchCountdown, lfBuildingID,
+			lfBuildingCountdown, lfResearchID, lfResearchCountdown := bot.ConstructionsBeingBuilt(planete.ID)
+
+		fmt.Printf("buildingID = %s, buildingCountdown = %d, researchID = %s, researchCountdown = %d, lfBuildingID = %s, lfBuildingCountdown = %d, lfResearchID = %s, lfResearchCountdown = %d\n", buildingID, buildingCountdown, researchID, researchCountdown, lfBuildingID, lfBuildingCountdown, lfResearchID, lfResearchCountdown)
 		buildResources(planete, bot)
+		SetExpedition(planete.ID, planete.Coordinate, bot)
 		/*if planete.Type == ogame.PlanetType && !trouve {
 			fmt.Println(planete.Resources)
 			planetLife = planete
@@ -100,6 +165,10 @@ func main() {
 		SetLanguages("en-US,en").
 		Build()
 
+	if err != nil {
+		panic(err)
+	}
+
 	params := wrapper.Params{
 		Universe:        universe,
 		Username:        username,
@@ -129,9 +198,11 @@ func connect(bot *wrapper.OGame) bool {
 	fmt.Printf("%s Connexion", time.Now().Format(time.RFC850))
 	bot.LoginWithExistingCookies()
 	time.Sleep(5000)
+	//if bot.IsConnected() {
 	getFlottePourExpe(bot)
+	//}
 
 	bot.Logout()
-	time.Sleep(1 * time.Minute)
+	time.Sleep(10 * time.Second)
 	return connect(bot)
 }
