@@ -102,6 +102,7 @@ func getFleetCompositionForExplo(sh ogame.ShipsInfos, slotDispo int64) ogame.Shi
 		shipsInfos.EspionageProbe = 10
 	}
 
+	slotDispo -= 1
 	shipsInfos.LargeCargo = sh.LargeCargo / slotDispo
 	shipsInfos.SmallCargo = sh.SmallCargo / slotDispo
 	shipsInfos.Pathfinder = sh.Pathfinder / slotDispo
@@ -146,7 +147,7 @@ func SetExpedition(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OG
 	slotDispo := slots.ExpTotal - slots.ExpInUse
 	shipsInfos := getFleetCompositionForExplo(sh, slotDispo)
 
-	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System, Position: 16}
+	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System + 1, Position: 16}
 	bot.SendFleet(id, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
 	fmt.Printf("fleet send to expedition from %s with this fleet: %s\n", coord.String(), shipsInfos)
 	printShipsInfos(shipsInfos)

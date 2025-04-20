@@ -17,14 +17,14 @@ func printFleets(fleet ogame.Fleet) {
 	fmt.Println(" Eclaireur")
 }
 
-func printStructFields(s interface{}) {
+func printStructFields(s interface{}) string {
 	val := reflect.ValueOf(s)
 	typ := reflect.TypeOf(s)
 
 	// S'assurer qu'on travaille avec une struct
 	if typ.Kind() != reflect.Struct {
 		fmt.Println("Ce n'est pas une struct")
-		return
+		return ""
 	}
 
 	nextLine := 0
@@ -44,9 +44,10 @@ func printStructFields(s interface{}) {
 	}
 
 	fmt.Println(print_str)
+	return print_str
 }
 
-func printCurrentconstruction(id ogame.CelestialID, bot *wrapper.OGame) {
+func printCurrentconstruction(id ogame.CelestialID, bot *wrapper.OGame) string {
 	buildingID, buildingCountdown, researchID, researchCountdown, lfBuildingID,
 		lfBuildingCountdown, lfResearchID, lfResearchCountdown := bot.ConstructionsBeingBuilt(id)
 
@@ -65,6 +66,7 @@ func printCurrentconstruction(id ogame.CelestialID, bot *wrapper.OGame) {
 	}
 
 	fmt.Println(print_str)
+	return print_str
 }
 
 func showCargo(bot *wrapper.OGame, planete ogame.EmpireCelestial, slots ogame.Slots) {

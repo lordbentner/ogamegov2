@@ -66,15 +66,13 @@ func buildResources(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 		bot.BuildBuilding(planete.ID, ogame.MetalStorageID)
 	}
 
-	if planete.Facilities.Shipyard < 6 {
+	if planete.Facilities.Shipyard < 12 {
 		bot.BuildBuilding(planete.ID, ogame.ShipyardID)
 	}
 }
 
 func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.Slots) {
 	res, _ := bot.GetResearch()
-	//fmt.Println(res)
-	printStructFields(res)
 	id := planete.ID
 	fac, _ := bot.GetFacilities(id)
 
@@ -83,6 +81,10 @@ func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.S
 	}
 
 	bot.BuildTechnology(id, ogame.AstrophysicsID)
+
+	if slots.Total-slots.ExpTotal < 1 || res.ComputerTechnology < 10 {
+		bot.BuildTechnology(id, ogame.ComputerTechnologyID)
+	}
 
 	if res.ImpulseDrive < 5 {
 		bot.BuildTechnology(id, ogame.ImpulseDriveID)
@@ -94,7 +96,6 @@ func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.S
 
 	bot.BuildTechnology(id, ogame.IntergalacticResearchNetworkID)
 	bot.BuildTechnology(id, ogame.CombustionDriveID)
-	//bot.BuildTechnology(id, ogame.ArmourTechnologyID)
 	if res.ShieldingTechnology < 6 {
 		bot.BuildTechnology(id, ogame.ShieldingTechnologyID)
 	}
@@ -111,7 +112,7 @@ func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.S
 		bot.BuildTechnology(id, ogame.ComputerTechnologyID)
 	}
 
-	/*if res.LaserTechnology < 10 {
+	if res.LaserTechnology < 10 {
 		bot.BuildTechnology(id, ogame.LaserTechnologyID)
 	}
 
@@ -120,5 +121,6 @@ func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.S
 	}
 
 	bot.BuildTechnology(id, ogame.PlasmaTechnologyID)
-	bot.BuildTechnology(id, ogame.WeaponsTechnologyID)*/
+	bot.BuildTechnology(id, ogame.WeaponsTechnologyID)
+	bot.BuildTechnology(id, ogame.ArmourTechnologyID)
 }

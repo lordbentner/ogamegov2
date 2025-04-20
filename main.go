@@ -14,6 +14,24 @@ import (
 	"github.com/alaingilbert/ogame/pkg/wrapper/solvers"
 )
 
+var botToken string
+var chatID string
+
+func sendTelegramMessage(token, chatID, message string) {
+	apiURL := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", token)
+
+	resp, err := http.PostForm(apiURL, url.Values{
+		"chat_id": {chatID},
+		"text":    {message},
+	})
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	fmt.Println("✅ Message envoyé avec succès.")
+}
+
 func getFlottePourExpe(bot *wrapper.OGame) {
 
 	slots, _ := bot.GetSlots()
@@ -34,6 +52,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 
 	Researches(empire[0], bot, slots)
 	buildFormeVie(empire[0], bot)
+
 	//	planetLife := empire[0]
 	//trouve := false
 	for _, planete := range empire {
@@ -47,26 +66,10 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		}*/
 	}
 
+	//sendTelegramMessage(botToken, chatID, empire[0])
+
 	//setExploVie(planetLife.ID, planetLife.Coordinate, bot, 0)
 }
-
-func sendTelegramMessage(token, chatID, message string) {
-	apiURL := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", token)
-
-	resp, err := http.PostForm(apiURL, url.Values{
-		"chat_id": {chatID},
-		"text":    {message},
-	})
-	if err != nil {
-		panic(err)
-	}
-	defer resp.Body.Close()
-
-	fmt.Println("✅ Message envoyé avec succès.")
-}
-
-var botToken string
-var chatID string
 
 func main() {
 	universe := os.Getenv("UNIVERSE")
@@ -75,12 +78,9 @@ func main() {
 	language := os.Getenv("LANGUAGE")
 	botToken = os.Getenv("BOTTOKEN")
 	chatID = os.Getenv("CHATID") // Exemple : "123456789"
-	//message := "📣 Notification envoyée depuis un programme Go sous Windows vers Telegram !"
 	startDate := time.Now()
 	fmt.Println(startDate)
 	fmt.Println(startDate.Add(5 * time.Minute))
-
-	//sendTelegramMessage(botToken, chatID, message)
 	fmt.Printf("Paramètres utilisateur récupéré => univers: %s username: %s mdp:%s language: %s\n", universe, username, password, language)
 
 	deviceName := "DEVICE-NAME"
@@ -121,7 +121,6 @@ func main() {
 	}
 
 	connect(bot)
-	//	getFlottePourExpe(bot)
 	bot.Logout()
 }
 
@@ -129,11 +128,8 @@ func connect(bot *wrapper.OGame) bool {
 	fmt.Printf("%s Connexion", time.Now().Format(time.RFC850))
 	bot.LoginWithExistingCookies()
 	time.Sleep(5000)
-	//if bot.IsConnected() {
 	getFlottePourExpe(bot)
-	//}
-
 	bot.Logout()
-	time.Sleep(10 * time.Second)
+	time.Sleep(10 * time.Minute)
 	return connect(bot)
 }
