@@ -66,3 +66,12 @@ func printCurrentconstruction(id ogame.CelestialID, bot *wrapper.OGame) {
 
 	fmt.Println(print_str)
 }
+
+func showCargo(bot *wrapper.OGame, planete ogame.EmpireCelestial, slots ogame.Slots) {
+	lfBonuses, _ := bot.GetCachedLfBonuses()
+	multiplier := float64(bot.GetServerData().CargoHyperspaceTechMultiplier) / 100.0
+	cargo := planete.Ships.Cargo(bot.GetCachedResearch(), lfBonuses, bot.CharacterClass(), multiplier, bot.GetServer().ProbeRaidsEnabled())
+	cargoExpe := cargo / slots.ExpTotal
+	cargoGT := ogame.LargeCargo.GetCargoCapacity(bot.GetCachedResearch(), lfBonuses, bot.CharacterClass(), multiplier, bot.GetServer().ProbeRaidsEnabled())
+	fmt.Printf("cargo total =%d, cargo par expe = %d\n, cargo GT = %d", cargo, cargoExpe, cargoGT)
+}

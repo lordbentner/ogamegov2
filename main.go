@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	"net/url"
 	"os"
 	"sort"
 	"time"
@@ -11,15 +13,6 @@ import (
 	"github.com/alaingilbert/ogame/pkg/wrapper"
 	"github.com/alaingilbert/ogame/pkg/wrapper/solvers"
 )
-
-func showCargo(bot *wrapper.OGame, planete ogame.EmpireCelestial, slots ogame.Slots) {
-	lfBonuses, _ := bot.GetCachedLfBonuses()
-	multiplier := float64(bot.GetServerData().CargoHyperspaceTechMultiplier) / 100.0
-	cargo := planete.Ships.Cargo(bot.GetCachedResearch(), lfBonuses, bot.CharacterClass(), multiplier, bot.GetServer().ProbeRaidsEnabled())
-	cargoExpe := cargo / slots.ExpTotal
-	cargoGT := ogame.LargeCargo.GetCargoCapacity(bot.GetCachedResearch(), lfBonuses, bot.CharacterClass(), multiplier, bot.GetServer().ProbeRaidsEnabled())
-	fmt.Printf("cargo total =%d, cargo par expe = %d\n, cargo GT = %d", cargo, cargoExpe, cargoGT)
-}
 
 func getFlottePourExpe(bot *wrapper.OGame) {
 
@@ -57,12 +50,37 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	//setExploVie(planetLife.ID, planetLife.Coordinate, bot, 0)
 }
 
+func sendTelegramMessage(token, chatID, message string) {
+	apiURL := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", token)
+
+	resp, err := http.PostForm(apiURL, url.Values{
+		"chat_id": {chatID},
+		"text":    {message},
+	})
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	fmt.Println("✅ Message envoyé avec succès.")
+}
+
+var botToken string
+var chatID string
+
 func main() {
 	universe := os.Getenv("UNIVERSE")
 	username := os.Getenv("USERNAME") // eg: email@gmail.com
 	password := os.Getenv("PASSWORD")
 	language := os.Getenv("LANGUAGE")
+	botToken = os.Getenv("BOTTOKEN")
+	chatID = os.Getenv("CHATID") // Exemple : "123456789"
+	//message := "📣 Notification envoyée depuis un programme Go sous Windows vers Telegram !"
+	startDate := time.Now()
+	fmt.Println(startDate)
+	fmt.Println(startDate.Add(5 * time.Minute))
 
+	//sendTelegramMessage(botToken, chatID, message)
 	fmt.Printf("Paramètres utilisateur récupéré => univers: %s username: %s mdp:%s language: %s\n", universe, username, password, language)
 
 	deviceName := "DEVICE-NAME"
@@ -101,7 +119,7 @@ func main() {
 	if !ff {
 		bot.Login()
 	}
-	//sendMail(bot)
+
 	connect(bot)
 	//	getFlottePourExpe(bot)
 	bot.Logout()
