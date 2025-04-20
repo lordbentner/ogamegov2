@@ -12,14 +12,27 @@ import (
 func satProduction(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	satprod := ogame.SolarSatellite.Production(planete.Temperature, 1, true)
 	cenprice := 20 * math.Pow(1.1, float64(planete.Supplies.SolarPlant))
+	fmt.Printf("%s(%s) cout centrale de solaire : %f production solaire: %d\n", planete.Name, planete.Coordinate, cenprice, satprod)
 	if cenprice > float64(satprod*2000) {
 		bot.BuildShips(planete.ID, ogame.SolarSatelliteID, 1)
 	}
 }
 
+func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
+	if planete.LfBuildings.ResidentialSector < 21 {
+		bot.BuildBuilding(planete.ID, ogame.ResidentialSectorID)
+	}
+
+	if planete.LfBuildings.BiosphereFarm < 22 {
+		bot.BuildBuilding(planete.ID, ogame.BiosphereFarmID)
+	}
+
+	fmt.Println(planete.LfBuildings)
+}
+
 func buildResources(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	time.Sleep(10000)
-	fmt.Println(planete.Supplies)
+	printStructFields(planete.Supplies)
 	if planete.Facilities.RoboticsFactory < 10 {
 		bot.BuildBuilding(planete.ID, ogame.RoboticsFactoryID)
 	} else {
@@ -56,7 +69,8 @@ func buildResources(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 
 func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.Slots) {
 	res, _ := bot.GetResearch()
-	fmt.Println(res)
+	//fmt.Println(res)
+	printStructFields(res)
 	id := planete.ID
 	fac, _ := bot.GetFacilities(id)
 
@@ -65,7 +79,6 @@ func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.S
 	}
 
 	bot.BuildTechnology(id, ogame.AstrophysicsID)
-	fmt.Println("Recherche...")
 
 	if res.ImpulseDrive < 5 {
 		bot.BuildTechnology(id, ogame.ImpulseDriveID)
@@ -78,7 +91,7 @@ func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.S
 	//bot.BuildTechnology(id, ogame.ComputerTechnologyID)
 	bot.BuildTechnology(id, ogame.IntergalacticResearchNetworkID)
 	bot.BuildTechnology(id, ogame.CombustionDriveID)
-	bot.BuildTechnology(id, ogame.ArmourTechnologyID)
+	//bot.BuildTechnology(id, ogame.ArmourTechnologyID)
 	if res.ShieldingTechnology < 6 {
 		bot.BuildTechnology(id, ogame.ShieldingTechnologyID)
 	}

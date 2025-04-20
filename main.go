@@ -12,34 +12,13 @@ import (
 	"github.com/alaingilbert/ogame/pkg/wrapper/solvers"
 )
 
-func printFleets(fleet ogame.Fleet) {
-	fmt.Print(fleet.Ships.LargeCargo)
-	fmt.Print(" GT,  ")
-	fmt.Print(fleet.Ships.SmallCargo)
-	fmt.Print(" PT, ")
-	fmt.Print(fleet.Ships.Pathfinder)
-	fmt.Println(" Eclaireur")
-}
-
-func printCurrentconstruction(id ogame.CelestialID, bot *wrapper.OGame) {
-	buildingID, buildingCountdown, researchID, researchCountdown, lfBuildingID,
-		lfBuildingCountdown, lfResearchID, lfResearchCountdown := bot.ConstructionsBeingBuilt(id)
-
-	print_str := "Construction en cours  ==> "
-	if buildingCountdown > 0 {
-		print_str += fmt.Sprintf("buildingID = %s, buildingCountdown = %d ", buildingID, buildingCountdown)
-	}
-	if researchCountdown > 0 {
-		print_str += fmt.Sprintf("researchID = %s, researchCountdown = %d ", researchID, researchCountdown)
-	}
-	if lfBuildingCountdown > 0 {
-		print_str += fmt.Sprintf("lfBuildingID = %s, lfBuildingCountdown = %d ", lfBuildingID, lfBuildingCountdown)
-	}
-	if lfResearchCountdown > 0 {
-		print_str += fmt.Sprintf("lfResearchID = %s, lfResearchCountdown = %d ", lfResearchID, lfResearchCountdown)
-	}
-
-	fmt.Println(print_str)
+func showCargo(bot *wrapper.OGame, planete ogame.EmpireCelestial, slots ogame.Slots) {
+	lfBonuses, _ := bot.GetCachedLfBonuses()
+	multiplier := float64(bot.GetServerData().CargoHyperspaceTechMultiplier) / 100.0
+	cargo := planete.Ships.Cargo(bot.GetCachedResearch(), lfBonuses, bot.CharacterClass(), multiplier, bot.GetServer().ProbeRaidsEnabled())
+	cargoExpe := cargo / slots.ExpTotal
+	cargoGT := ogame.LargeCargo.GetCargoCapacity(bot.GetCachedResearch(), lfBonuses, bot.CharacterClass(), multiplier, bot.GetServer().ProbeRaidsEnabled())
+	fmt.Printf("cargo total =%d, cargo par expe = %d\n, cargo GT = %d", cargo, cargoExpe, cargoGT)
 }
 
 func getFlottePourExpe(bot *wrapper.OGame) {
@@ -61,6 +40,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	}
 
 	Researches(empire[0], bot, slots)
+	buildFormeVie(empire[0], bot)
 	//	planetLife := empire[0]
 	//trouve := false
 	for _, planete := range empire {
@@ -75,13 +55,6 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	}
 
 	//setExploVie(planetLife.ID, planetLife.Coordinate, bot, 0)
-
-	/*lfBonuses, _ := bot.GetCachedLfBonuses()
-	multiplier := float64(bot.GetServerData().CargoHyperspaceTechMultiplier) / 100.0
-	cargo := empire[0].Ships.Cargo(bot.GetCachedResearch(), lfBonuses, bot.CharacterClass(), multiplier, bot.GetServer().ProbeRaidsEnabled())
-	cargoExpe := cargo / slots.ExpTotal
-	cargoGT := ogame.LargeCargo.GetCargoCapacity(bot.GetCachedResearch(), lfBonuses, bot.CharacterClass(), multiplier, bot.GetServer().ProbeRaidsEnabled())
-	fmt.Printf("cargo total =%d, cargo par expe = %d\n, cargo GT = %d", cargo, cargoExpe, cargoGT)*/
 }
 
 func main() {
