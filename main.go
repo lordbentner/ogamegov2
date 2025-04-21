@@ -130,6 +130,6 @@ func connect(bot *wrapper.OGame) bool {
 	time.Sleep(5000)
 	getFlottePourExpe(bot)
 	bot.Logout()
-	time.Sleep(10 * time.Minute)
+	time.Sleep(10 * time.Second)
 	return connect(bot)
 }
