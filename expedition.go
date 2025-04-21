@@ -59,12 +59,12 @@ func printShipsInfos(ships ogame.ShipsInfos) {
 func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGame, index int) int {
 	slots, _ := bot.GetSlots()
 	if slots.InUse >= slots.ExpTotal {
+		fmt.Println("Explocatin impossible car pas de slots disponible")
 		return 0
 	}
 	att, _ := bot.IsUnderAttack()
 	slotsDispo := int(slots.Total - slots.InUse)
 	if !att {
-		fmt.Println("lklkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
 		for i := 0; i < slotsDispo; i++ {
 			pos := int64(i + 1 + index)
 			gal := coord.Galaxy

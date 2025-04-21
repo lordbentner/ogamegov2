@@ -56,7 +56,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	buildFormeVie(empire[0], bot)
 
 	planetLife := empire[0]
-	expMes, err := bot.GetExpeditionMessages(1)
+	/*expMes, err := bot.GetExpeditionMessages(1)
 	if err == nil {
 		fmt.Println("kjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj dautres messages apparaissent")
 		for i := 2; i < 20; i++ {
@@ -69,7 +69,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		}
 	}
 
-	fmt.Println(expMes[0])
+	fmt.Println(expMes[0])*/
 	for _, planete := range empire {
 		buildResources(planete, bot)
 		SetExpedition(planete.ID, planete.Coordinate, bot)
