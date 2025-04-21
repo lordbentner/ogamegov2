@@ -56,11 +56,14 @@ func printShipsInfos(ships ogame.ShipsInfos) {
 	fmt.Printf("GT = %d, PT = %d, Eclaireur = %d, Sonde = %d\n", ships.LargeCargo, ships.SmallCargo, ships.Pathfinder, ships.EspionageProbe)
 }
 
-func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGame, index int) bool {
-	att, _ := bot.IsUnderAttack()
+func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGame, index int) int {
 	slots, _ := bot.GetSlots()
+	if slots.InUse >= slots.ExpTotal {
+		return 0
+	}
+	att, _ := bot.IsUnderAttack()
 	slotsDispo := int(slots.Total - slots.InUse)
-	if !att {
+	if !att && (slots.ExpTotal-slots.ExpInUse < 1) {
 		for i := 0; i < slotsDispo; i++ {
 			pos := int64(i + 1 + index)
 			gal := coord.Galaxy
@@ -86,12 +89,7 @@ func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGam
 
 	time.Sleep(5000)
 	newslots, _ := bot.GetSlots()
-	slotsDispo = int(newslots.Total - newslots.InUse)
-	if newslots.Total-newslots.InUse > 0 {
-		return setExploVie(id, coord, bot, slotsDispo)
-	}
-
-	return false
+	return int(newslots.Total - newslots.InUse)
 }
 
 func getFleetCompositionForExplo(sh ogame.ShipsInfos, slotDispo int64) ogame.ShipsInfos {
@@ -139,14 +137,14 @@ func getFleetCompositionForExplo(sh ogame.ShipsInfos, slotDispo int64) ogame.Shi
 func SetExpedition(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGame) {
 	sh, _ := bot.GetShips(id)
 	slots, _ := bot.GetSlots()
-	if slots.ExpInUse >= slots.ExpTotal || sh.SmallCargo == 0 /*|| sh.EspionageProbe == 0 || sh.Pathfinder == 0*/ {
+	if slots.ExpInUse >= slots.ExpTotal || sh.SmallCargo == 0 /*|| sh.EspionageProbe == 0 || sh.Pathfinder == 0*/ || slots.InUse >= slots.Total {
 		return
 	}
 
 	slotDispo := slots.ExpTotal - slots.ExpInUse
 	shipsInfos := getFleetCompositionForExplo(sh, slotDispo)
 
-	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System, Position: 16}
+	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System + 2, Position: 16}
 	bot.SendFleet(id, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
 	fmt.Printf("fleet send to expedition from %s with this fleet: %s\n", coord.String(), shipsInfos)
 	printShipsInfos(shipsInfos)

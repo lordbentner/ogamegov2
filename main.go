@@ -32,6 +32,8 @@ func sendTelegramMessage(token, chatID, message string) {
 	fmt.Println("✅ Message envoyé avec succès.")
 }
 
+var incrExploVie int = 0
+
 func getFlottePourExpe(bot *wrapper.OGame) {
 
 	slots, _ := bot.GetSlots()
@@ -53,7 +55,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	Researches(empire[0], bot, slots)
 	buildFormeVie(empire[0], bot)
 
-	//	planetLife := empire[0]
+	planetLife := empire[0]
 	//trouve := false
 	for _, planete := range empire {
 		buildResources(planete, bot)
@@ -68,7 +70,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 
 	//sendTelegramMessage(botToken, chatID, empire[0])
 
-	//setExploVie(planetLife.ID, planetLife.Coordinate, bot, 0)
+	incrExploVie = setExploVie(planetLife.ID, planetLife.Coordinate, bot, incrExploVie)
 }
 
 func main() {
