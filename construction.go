@@ -32,6 +32,15 @@ func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 
 func buildResources(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	time.Sleep(10000)
+	resDetails, _ := bot.GetResourcesDetails(planete.ID)
+	if resDetails.Crystal.StorageCapacity-resDetails.Crystal.StorageCapacity/10 < planete.Resources.Crystal {
+		bot.BuildBuilding(planete.ID, ogame.CrystalStorageID)
+	} else if resDetails.Deuterium.StorageCapacity-resDetails.Deuterium.StorageCapacity/10 < planete.Resources.Deuterium {
+		bot.BuildBuilding(planete.ID, ogame.DeuteriumTankID)
+	} else if resDetails.Metal.StorageCapacity-resDetails.Metal.StorageCapacity/10 < planete.Resources.Metal {
+		bot.BuildBuilding(planete.ID, ogame.MetalStorageID)
+	}
+
 	printStructFields(planete.Supplies)
 	if planete.Facilities.RoboticsFactory < 10 {
 		bot.BuildBuilding(planete.ID, ogame.RoboticsFactoryID)
@@ -55,15 +64,6 @@ func buildResources(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	} else {
 		err := bot.BuildBuilding(planete.ID, 1)
 		fmt.Printf("construction metal mine err =%s\n", err)
-	}
-
-	resDetails, _ := bot.GetResourcesDetails(planete.ID)
-	if resDetails.Crystal.StorageCapacity-resDetails.Crystal.StorageCapacity/10 < planete.Resources.Crystal {
-		bot.BuildBuilding(planete.ID, ogame.CrystalStorageID)
-	} else if resDetails.Deuterium.StorageCapacity-resDetails.Deuterium.StorageCapacity/10 < planete.Resources.Deuterium {
-		bot.BuildBuilding(planete.ID, ogame.DeuteriumTankID)
-	} else if resDetails.Metal.StorageCapacity-resDetails.Metal.StorageCapacity/10 < planete.Resources.Metal {
-		bot.BuildBuilding(planete.ID, ogame.MetalStorageID)
 	}
 
 	if planete.Facilities.Shipyard < 12 {

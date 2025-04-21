@@ -56,16 +56,24 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	buildFormeVie(empire[0], bot)
 
 	planetLife := empire[0]
-	//trouve := false
+	expMes, err := bot.GetExpeditionMessages(1)
+	if err == nil {
+		fmt.Println("kjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj dautres messages apparaissent")
+		for i := 2; i < 20; i++ {
+			exptest, er := bot.GetExpeditionMessages(int64(i))
+			if er != nil {
+				break
+			} else {
+				expMes = exptest
+			}
+		}
+	}
+
+	fmt.Println(expMes[0])
 	for _, planete := range empire {
 		buildResources(planete, bot)
 		SetExpedition(planete.ID, planete.Coordinate, bot)
 		printCurrentconstruction(planete.ID, bot)
-		/*if planete.Type == ogame.PlanetType && !trouve {
-			fmt.Println(planete.Resources)
-			planetLife = planete
-			trouve = true
-		}*/
 	}
 
 	//sendTelegramMessage(botToken, chatID, empire[0])

@@ -63,7 +63,7 @@ func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGam
 	}
 	att, _ := bot.IsUnderAttack()
 	slotsDispo := int(slots.Total - slots.InUse)
-	if !att && (slots.ExpTotal-slots.ExpInUse < 1) {
+	if !att {
 		fmt.Println("lklkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
 		for i := 0; i < slotsDispo; i++ {
 			pos := int64(i + 1 + index)
@@ -145,7 +145,7 @@ func SetExpedition(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OG
 	slotDispo := slots.ExpTotal - slots.ExpInUse
 	shipsInfos := getFleetCompositionForExplo(sh, slotDispo)
 
-	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System + 2, Position: 16}
+	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System + 3, Position: 16}
 	bot.SendFleet(id, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
 	fmt.Printf("fleet send to expedition from %s with this fleet: ", coord.String())
 	printStructFields(shipsInfos)
