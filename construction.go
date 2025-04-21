@@ -26,8 +26,6 @@ func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	if planete.LfBuildings.BiosphereFarm < 22 {
 		bot.BuildBuilding(planete.ID, ogame.BiosphereFarmID)
 	}
-
-	fmt.Println(planete.LfBuildings)
 }
 
 func buildResources(planete ogame.EmpireCelestial, bot *wrapper.OGame) {

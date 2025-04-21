@@ -32,7 +32,7 @@ func sendTelegramMessage(token, chatID, message string) {
 	fmt.Println("✅ Message envoyé avec succès.")
 }
 
-var incrExploVie int = 0
+//var incrExploVie int = 0
 
 func getFlottePourExpe(bot *wrapper.OGame) {
 
@@ -54,23 +54,11 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 
 	Researches(empire[0], bot, slots)
 	buildFormeVie(empire[0], bot)
+	fmt.Println("=======================================================")
 
-	planetLife := empire[0]
-	/*expMes, err := bot.GetExpeditionMessages(1)
-	if err == nil {
-		fmt.Println("kjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj dautres messages apparaissent")
-		for i := 2; i < 20; i++ {
-			exptest, er := bot.GetExpeditionMessages(int64(i))
-			if er != nil {
-				break
-			} else {
-				expMes = exptest
-			}
-		}
-	}
-
-	fmt.Println(expMes[0])*/
+	//planetLife := empire[0]
 	for _, planete := range empire {
+		fmt.Printf("======================= planete %s(%s) =========================\n", planete.Name, planete.Coordinate)
 		buildResources(planete, bot)
 		SetExpedition(planete.ID, planete.Coordinate, bot)
 		printCurrentconstruction(planete.ID, bot)
@@ -78,7 +66,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 
 	//sendTelegramMessage(botToken, chatID, empire[0])
 
-	incrExploVie = setExploVie(planetLife.ID, planetLife.Coordinate, bot, incrExploVie)
+	//setExploVie(planetLife.ID, planetLife.Coordinate, bot, 0)
 }
 
 func main() {

@@ -58,12 +58,15 @@ func printShipsInfos(ships ogame.ShipsInfos) {
 
 func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGame, index int) int {
 	slots, _ := bot.GetSlots()
-	if slots.InUse >= slots.ExpTotal {
-		fmt.Println("Explocatin impossible car pas de slots disponible")
+	fmt.Println("Gestion exploration forme de vie")
+	if slots.InUse >= slots.Total || slots.ExpInUse < slots.ExpTotal {
+		fmt.Println("Exploration impossible car pas de slots disponible")
 		return 0
 	}
 	att, _ := bot.IsUnderAttack()
 	slotsDispo := int(slots.Total - slots.InUse)
+	nbError := 0
+	co := coord
 	if !att {
 		for i := 0; i < slotsDispo; i++ {
 			pos := int64(i + 1 + index)
@@ -71,26 +74,37 @@ func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGam
 			sys := coord.System
 			if pos > 15 {
 				pos = 1
-				gal++
 				sys++
 			}
+
+			if sys > 499 {
+				sys = 1
+				gal++
+			}
+
 			if gal > 6 {
 				gal = 1
 			}
-			if sys > 499 {
-				sys = 1
+
+			co = ogame.Coordinate{Galaxy: gal, System: sys, Position: pos}
+
+			err := bot.SendDiscoveryFleet(id, co)
+			if err != nil {
+				nbError++
+				fmt.Printf("%s: Erreur d'envoie explo vie : %s", co, err)
+			} else {
+				fmt.Printf("fleet send to life discovery from %s to %s\n", coord.String(), co)
 			}
-
-			co := ogame.Coordinate{Galaxy: gal, System: sys, Position: pos}
-
-			bot.SendDiscoveryFleet(id, co)
-			fmt.Printf("fleet send to life discovery from %s to %s\n", coord.String(), co)
 		}
 	}
 
 	time.Sleep(5000)
-	newslots, _ := bot.GetSlots()
-	return int(newslots.Total - newslots.InUse)
+	if nbError > 0 {
+		fmt.Printf("%d erreurs d'envoie d'explo vie détectés\n", nbError)
+		return setExploVie(id, co, bot, nbError)
+	}
+
+	return 0
 }
 
 func getFleetCompositionForExplo(sh ogame.ShipsInfos, slotDispo int64) ogame.ShipsInfos {
@@ -145,7 +159,7 @@ func SetExpedition(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OG
 	slotDispo := slots.ExpTotal - slots.ExpInUse
 	shipsInfos := getFleetCompositionForExplo(sh, slotDispo)
 
-	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System + 3, Position: 16}
+	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System + 4, Position: 16}
 	bot.SendFleet(id, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
 	fmt.Printf("fleet send to expedition from %s with this fleet: ", coord.String())
 	printStructFields(shipsInfos)
@@ -165,4 +179,21 @@ func getTotalGTCombine(empire []ogame.EmpireCelestial, empireMoon []ogame.Empire
 	total := GT + (PT / 5) + Eclaireur/(5/2)
 	fmt.Printf("GT Total = %d\n", total)
 	return total
+}
+
+func gestionMessagesExpe() {
+	/*expMes, err := bot.GetExpeditionMessages(1)
+	if err == nil {
+		fmt.Println("kjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj dautres messages apparaissent")
+		for i := 2; i < 20; i++ {
+			exptest, er := bot.GetExpeditionMessages(int64(i))
+			if er != nil {
+				break
+			} else {
+				expMes = exptest
+			}
+		}
+	}
+
+	fmt.Println(expMes[0])*/
 }
