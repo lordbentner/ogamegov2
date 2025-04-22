@@ -31,6 +31,12 @@ func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 func buildResources(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	time.Sleep(10000)
 	resDetails, _ := bot.GetResourcesDetails(planete.ID)
+	if planete.Facilities.RoboticsFactory < 10 {
+		bot.BuildBuilding(planete.ID, ogame.RoboticsFactoryID)
+	} else {
+		bot.BuildBuilding(planete.ID, ogame.NaniteFactoryID)
+	}
+
 	if resDetails.Crystal.StorageCapacity-resDetails.Crystal.StorageCapacity/10 < planete.Resources.Crystal {
 		bot.BuildBuilding(planete.ID, ogame.CrystalStorageID)
 	} else if resDetails.Deuterium.StorageCapacity-resDetails.Deuterium.StorageCapacity/10 < planete.Resources.Deuterium {
@@ -40,12 +46,6 @@ func buildResources(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	}
 
 	printStructFields(planete.Supplies)
-	if planete.Facilities.RoboticsFactory < 10 {
-		bot.BuildBuilding(planete.ID, ogame.RoboticsFactoryID)
-	} else {
-		bot.BuildBuilding(planete.ID, ogame.NaniteFactoryID)
-	}
-
 	if planete.Resources.Energy < 0 {
 		err := bot.BuildBuilding(planete.ID, ogame.SolarPlantID)
 		if err != nil {
