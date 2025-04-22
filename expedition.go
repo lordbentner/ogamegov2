@@ -56,7 +56,30 @@ func printShipsInfos(ships ogame.ShipsInfos) {
 	fmt.Printf("GT = %d, PT = %d, Eclaireur = %d, Sonde = %d\n", ships.LargeCargo, ships.SmallCargo, ships.Pathfinder, ships.EspionageProbe)
 }
 
-func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGame, index int) int {
+func getCorrectCoord(coord ogame.Coordinate) ogame.Coordinate {
+	pos := coord.Position
+	gal := coord.Galaxy
+	sys := coord.System
+	if pos > 15 {
+		pos = 1
+		sys++
+	}
+
+	if sys > 499 {
+		sys = 1
+		gal++
+	}
+
+	if gal > 6 {
+		gal = 1
+	}
+
+	return ogame.Coordinate{Galaxy: gal, System: sys, Position: pos}
+}
+
+var tentaTiveExplovie int = 0
+
+func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGame) int {
 	slots, _ := bot.GetSlots()
 	fmt.Println("Gestion exploration forme de vie")
 	if slots.InUse >= slots.Total || slots.ExpInUse < slots.ExpTotal {
@@ -64,29 +87,16 @@ func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGam
 		return 0
 	}
 	att, _ := bot.IsUnderAttack()
-	slotsDispo := int(slots.Total - slots.InUse)
+	slotsDispo := int64(slots.Total - slots.InUse)
 	nbError := 0
 	co := coord
 	if !att {
-		for i := 0; i < slotsDispo; i++ {
-			pos := int64(i + 1 + index)
+		for i := coord.Position; i < slotsDispo+int64(coord.Position); i++ {
+			pos := int64(i + 1)
 			gal := coord.Galaxy
 			sys := coord.System
-			if pos > 15 {
-				pos = 1
-				sys++
-			}
 
-			if sys > 499 {
-				sys = 1
-				gal++
-			}
-
-			if gal > 6 {
-				gal = 1
-			}
-
-			co = ogame.Coordinate{Galaxy: gal, System: sys, Position: pos}
+			co = getCorrectCoord(ogame.Coordinate{Galaxy: gal, System: sys, Position: pos})
 
 			err := bot.SendDiscoveryFleet(id, co)
 			if err != nil {
@@ -98,10 +108,15 @@ func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGam
 		}
 	}
 
-	time.Sleep(5000)
 	if nbError > 0 {
 		fmt.Printf("%d erreurs d'envoie d'explo vie détectés\n", nbError)
-		return setExploVie(id, co, bot, nbError)
+		tentaTiveExplovie++
+		time.Sleep(5 * time.Second)
+		if tentaTiveExplovie < 10 {
+			return setExploVie(id, co, bot)
+		} else {
+			tentaTiveExplovie = 0
+		}
 	}
 
 	return 0
@@ -115,9 +130,9 @@ func getFleetCompositionForExplo(sh ogame.ShipsInfos, slotDispo int64) ogame.Shi
 		shipsInfos.EspionageProbe = 10
 	}
 
-	shipsInfos.LargeCargo = sh.LargeCargo / slotDispo
-	shipsInfos.SmallCargo = sh.SmallCargo / slotDispo
-	shipsInfos.Pathfinder = sh.Pathfinder / slotDispo
+	shipsInfos.LargeCargo = sh.LargeCargo * 2 / slotDispo
+	shipsInfos.SmallCargo = sh.SmallCargo * 2 / slotDispo
+	shipsInfos.Pathfinder = sh.Pathfinder * 2 / slotDispo
 	if slotDispo == 1 {
 		shipsInfos.LargeCargo = sh.LargeCargo
 		shipsInfos.SmallCargo = sh.SmallCargo
@@ -159,7 +174,7 @@ func SetExpedition(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OG
 	slotDispo := slots.ExpTotal - slots.ExpInUse
 	shipsInfos := getFleetCompositionForExplo(sh, slotDispo)
 
-	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System, Position: 16}
+	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System - 5, Position: 16}
 	bot.SendFleet(id, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
 	fmt.Printf("fleet send to expedition from %s with this fleet: ", coord.String())
 	printStructFields(shipsInfos)
@@ -181,8 +196,8 @@ func getTotalGTCombine(empire []ogame.EmpireCelestial, empireMoon []ogame.Empire
 	return total
 }
 
-func gestionMessagesExpe() {
-	/*expMes, err := bot.GetExpeditionMessages(1)
+func gestionMessagesExpe(bot *wrapper.OGame) {
+	expMes, err := bot.GetExpeditionMessages(1)
 	if err == nil {
 		fmt.Println("kjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj dautres messages apparaissent")
 		for i := 2; i < 20; i++ {
@@ -195,5 +210,5 @@ func gestionMessagesExpe() {
 		}
 	}
 
-	fmt.Println(expMes[0])*/
+	fmt.Println(expMes[0].Content)
 }

@@ -53,20 +53,26 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	}
 
 	Researches(empire[0], bot, slots)
-	buildFormeVie(empire[0], bot)
-	fmt.Println("=======================================================")
+	gestionMessagesExpe(bot)
+	fmt.Println("================================================================")
 
 	//planetLife := empire[0]
 	for _, planete := range empire {
 		fmt.Printf("======================= planete %s(%s) =========================\n", planete.Name, planete.Coordinate)
-		buildResources(planete, bot)
+		if planete.Type == ogame.MoonType {
+			buildMoon(planete, bot)
+		} else {
+			buildResources(planete, bot)
+		}
+
+		//	buildFormeVie(planete, bot)
 		SetExpedition(planete.ID, planete.Coordinate, bot)
 		printCurrentconstruction(planete.ID, bot)
 	}
 
 	//sendTelegramMessage(botToken, chatID, empire[0])
 
-	//setExploVie(planetLife.ID, planetLife.Coordinate, bot, 0)
+	//setExploVie(planetLife.ID, planetLife.Coordinate, bot)
 }
 
 func main() {
