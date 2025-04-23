@@ -95,8 +95,8 @@ func getFleetCompositionForExplo(sh ogame.ShipsInfos, slotDispo int64) ogame.Shi
 	return shipsInfos
 }
 
-func SetExpedition(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGame) {
-	sh, _ := bot.GetShips(id)
+func SetExpedition(planete ogame.EmpireCelestial, bot *wrapper.OGame, coord ogame.Coordinate) {
+	sh, _ := bot.GetShips(planete.ID)
 	slots, _ := bot.GetSlots()
 	if slots.ExpInUse >= slots.ExpTotal || sh.SmallCargo == 0 /*|| sh.EspionageProbe == 0 || sh.Pathfinder == 0*/ || slots.InUse >= slots.Total {
 		return
@@ -105,15 +105,15 @@ func SetExpedition(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OG
 	slotDispo := slots.ExpTotal - slots.ExpInUse
 	shipsInfos := getFleetCompositionForExplo(sh, slotDispo)
 
-	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System + 1, Position: 16}
-	bot.SendFleet(id, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
+	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System, Position: 16}
+	bot.SendFleet(planete.ID, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
 	fmt.Printf("fleet send to expedition from %s with this fleet: ", coord.String())
 	printStructFields(shipsInfos)
 	printShipsInfos(shipsInfos)
 	time.Sleep(5000)
 }
 
-func gestionMessagesExpe(bot *wrapper.OGame) {
+func gestionMessagesExpe(bot *wrapper.OGame) ogame.ExpeditionMessage {
 	expMes, err := bot.GetExpeditionMessages(1)
 	if err == nil {
 		fmt.Println("kjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj dautres messages apparaissent")
@@ -128,4 +128,5 @@ func gestionMessagesExpe(bot *wrapper.OGame) {
 	}
 
 	fmt.Println(expMes[0].Content)
+	return expMes[0]
 }

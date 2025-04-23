@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/alaingilbert/ogame/pkg/ogame"
 	"github.com/alaingilbert/ogame/pkg/wrapper"
@@ -58,4 +59,17 @@ func getCorrectCoord(coord ogame.Coordinate) ogame.Coordinate {
 	}
 
 	return ogame.Coordinate{Galaxy: gal, System: sys, Position: pos}
+}
+
+func changeSystemeExploration(content string) bool {
+
+	if strings.Contains(content, "avons découvert") || strings.Contains(content, "avons failli") {
+		return true
+	}
+
+	if strings.Contains(content, "avons fêté") {
+		return true
+	}
+
+	return false
 }

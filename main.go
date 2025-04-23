@@ -52,8 +52,22 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		return
 	}
 
+	//getFastestResearch(empire[0], bot)
+	//os.Exit(1)
 	Researches(empire[0], bot, slots)
-	gestionMessagesExpe(bot)
+	expeMes := gestionMessagesExpe(bot)
+	coordExpe := expeMes.Coordinate
+	fmt.Println(coordExpe)
+	if changeSystemeExploration(expeMes.Content) {
+		coordMain := empire[0].Coordinate
+		sys := coordExpe.System + 1
+		if sys > coordMain.System+10 {
+			sys = coordMain.System
+		}
+
+		coordExpe = ogame.Coordinate{Galaxy: coordExpe.Galaxy, System: sys, Position: 16}
+	}
+
 	fmt.Println("================================================================")
 
 	//planetLife := empire[0]
@@ -66,7 +80,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		}
 
 		buildFormeVie(planete, bot)
-		SetExpedition(planete.ID, planete.Coordinate, bot)
+		SetExpedition(planete, bot, coordExpe)
 		printCurrentconstruction(planete.ID, bot)
 	}
 

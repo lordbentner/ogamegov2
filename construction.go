@@ -21,9 +21,16 @@ func satProduction(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 /*func getFastestResearch(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	speed := 8
 	hasTechnocrat := false
-	isExplo := true
-	astro := planete.Researches.Astrophysics
-	ogame.Astrophysics.ConstructionTime(astro+1, int64(speed), planete.Facilities, hasTechnocrat, isExplo)
+	lfbonuses, _ := bot.GetLfBonuses()
+	d_astro := ogame.Astrophysics.ConstructionTime(planete.Researches.Astrophysics+1, int64(speed), planete.Facilities, lfbonuses, ogame.Discoverer, hasTechnocrat)
+	d_hyper_techno := ogame.HyperspaceTechnology.ConstructionTime(planete.Researches.HyperspaceTechnology+1, int64(speed), planete.Facilities, lfbonuses, ogame.Discoverer, hasTechnocrat)
+	d_hyper_drive := ogame.HyperspaceTechnology.ConstructionTime(planete.Researches.HyperspaceDrive+1, int64(speed), planete.Facilities, lfbonuses, ogame.Discoverer, hasTechnocrat)
+	d_weapon := ogame.WeaponsTechnology.ConstructionTime(planete.Researches.WeaponsTechnology+1, int64(speed), planete.Facilities, lfbonuses, ogame.Discoverer, hasTechnocrat)
+	d_shield := ogame.ShieldingTechnology.ConstructionTime(planete.Researches.ShieldingTechnology+1, int64(speed), planete.Facilities, lfbonuses, ogame.Discoverer, hasTechnocrat)
+
+	fmt.Printf("a = %d, ht = %d, hg = %d, wepon = %d", d_astro, d_hyper_techno, d_hyper_drive, d_weapon)
+	//(level int64, universeSpeed int64, facilities ogame.BuildAccelerators, lfBonuses ogame.LfBonuses, class ogame.CharacterClass, hasTechnocrat bool)
+
 }*/
 
 func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
@@ -57,6 +64,10 @@ func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 		bot.BuildBuilding(planete.ID, ogame.BiosphereFarmID)
 		bot.BuildBuilding(planete.ID, ogame.CrystalFarmID)
 	}
+
+	bot.BuildTechnology(planete.ID, ogame.HighPerformanceExtractorsID)
+	bot.BuildTechnology(planete.ID, ogame.VolcanicBatteriesID)
+	bot.BuildTechnology(planete.ID, ogame.HighEnergyPumpSystemsID)
 }
 
 func buildMoon(moon ogame.EmpireCelestial, bot *wrapper.OGame) {
@@ -123,6 +134,7 @@ func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.S
 		bot.BuildBuilding(id, ogame.ResearchLabID)
 	}
 
+	bot.BuildTechnology(id, ogame.IntergalacticResearchNetworkID)
 	if slots.Total-slots.ExpTotal < 1 || res.ComputerTechnology < 10 {
 		bot.BuildTechnology(id, ogame.ComputerTechnologyID)
 	}
@@ -137,7 +149,6 @@ func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.S
 		bot.BuildTechnology(id, ogame.EspionageTechnologyID)
 	}
 
-	bot.BuildTechnology(id, ogame.IntergalacticResearchNetworkID)
 	bot.BuildTechnology(id, ogame.CombustionDriveID)
 	if res.ShieldingTechnology < 6 {
 		bot.BuildTechnology(id, ogame.ShieldingTechnologyID)
