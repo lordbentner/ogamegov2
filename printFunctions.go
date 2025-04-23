@@ -83,3 +83,33 @@ func showCargo(bot *wrapper.OGame, planete ogame.EmpireCelestial, slots ogame.Sl
 	cargoGT := ogame.LargeCargo.GetCargoCapacity(bot.GetCachedResearch(), lfBonuses, bot.CharacterClass(), multiplier, bot.GetServer().ProbeRaidsEnabled())
 	fmt.Printf("cargo total =%d, cargo par expe = %d\n, cargo GT = %d", cargo, cargoExpe, cargoGT)
 }
+
+func GetTotalForExpeShips(empire []ogame.EmpireCelestial) (int, int, int) {
+	GT := 0
+	PT := 0
+	Eclaireur := 0
+
+	for _, planete := range empire {
+		ships := planete.Ships
+		printShips(planete)
+		GT = GT + int(ships.LargeCargo)
+		PT = PT + int(ships.SmallCargo)
+		Eclaireur = Eclaireur + int(ships.Pathfinder)
+	}
+
+	return GT, PT, Eclaireur
+}
+
+func printShips(planete ogame.EmpireCelestial) {
+	fmt.Println(planete.Name + " : " + planete.Coordinate.String())
+	fmt.Print(planete.Ships.LargeCargo)
+	fmt.Print(" GT,  ")
+	fmt.Print(planete.Ships.SmallCargo)
+	fmt.Print(" PT, ")
+	fmt.Print(planete.Ships.Pathfinder)
+	fmt.Println(" Eclaireur")
+}
+
+func printShipsInfos(ships ogame.ShipsInfos) {
+	fmt.Printf("GT = %d, PT = %d, Eclaireur = %d, Sonde = %d\n", ships.LargeCargo, ships.SmallCargo, ships.Pathfinder, ships.EspionageProbe)
+}

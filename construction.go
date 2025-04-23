@@ -26,12 +26,25 @@ func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 		bot.BuildBuilding(planete.ID, ogame.HighEnergySmeltingID)
 	}
 
-	if planete.LfBuildings.ResidentialSector < 41 {
-		bot.BuildBuilding(planete.ID, ogame.ResidentialSectorID)
+	if planete.LfBuildings.ResidentialSector < 41 || planete.LfBuildings.MeditationEnclave < 41 {
+		hab := planete.LfBuildings.ResidentialSector
+		if planete.LfBuildings.MeditationEnclave > 0 {
+			hab = planete.LfBuildings.MeditationEnclave
+		}
+
+		food := planete.LfBuildings.BiosphereFarm
+		if planete.LfBuildings.CrystalFarm > 0 {
+			food = planete.LfBuildings.CrystalFarm
+		}
+		if hab < food-1 {
+			bot.BuildBuilding(planete.ID, ogame.ResidentialSectorID)
+			bot.BuildBuilding(planete.ID, ogame.MeditationEnclaveID)
+		}
 	}
 
-	if planete.LfBuildings.BiosphereFarm < 42 {
+	if planete.LfBuildings.BiosphereFarm < 42 || planete.LfBuildings.CrystalFarm < 42 {
 		bot.BuildBuilding(planete.ID, ogame.BiosphereFarmID)
+		bot.BuildBuilding(planete.ID, ogame.CrystalFarmID)
 	}
 }
 

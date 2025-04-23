@@ -65,7 +65,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 			buildResources(planete, bot)
 		}
 
-		//	buildFormeVie(planete, bot)
+		buildFormeVie(planete, bot)
 		SetExpedition(planete.ID, planete.Coordinate, bot)
 		printCurrentconstruction(planete.ID, bot)
 	}
