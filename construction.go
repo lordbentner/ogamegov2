@@ -18,12 +18,23 @@ func satProduction(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	}
 }
 
+/*func getFastestResearch(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
+	speed := 8
+	hasTechnocrat := false
+	isExplo := true
+	astro := planete.Researches.Astrophysics
+	ogame.Astrophysics.ConstructionTime(astro+1, int64(speed), planete.Facilities, hasTechnocrat, isExplo)
+}*/
+
 func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	bot.BuildBuilding(planete.ID, ogame.FusionPoweredProductionID)
+	bot.BuildBuilding(planete.ID, ogame.CrystalRefineryID)
 	if planete.LfBuildings.ResearchCentre < 5 {
 		bot.BuildBuilding(planete.ID, ogame.ResearchCentreID)
+		bot.BuildBuilding(planete.ID, ogame.RuneTechnologiumID)
 	} else {
 		bot.BuildBuilding(planete.ID, ogame.HighEnergySmeltingID)
+		bot.BuildBuilding(planete.ID, ogame.MagmaForgeID)
 	}
 
 	if planete.LfBuildings.ResidentialSector < 41 || planete.LfBuildings.MeditationEnclave < 41 {

@@ -105,26 +105,12 @@ func SetExpedition(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OG
 	slotDispo := slots.ExpTotal - slots.ExpInUse
 	shipsInfos := getFleetCompositionForExplo(sh, slotDispo)
 
-	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System - 5, Position: 16}
+	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System + 1, Position: 16}
 	bot.SendFleet(id, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
 	fmt.Printf("fleet send to expedition from %s with this fleet: ", coord.String())
 	printStructFields(shipsInfos)
 	printShipsInfos(shipsInfos)
 	time.Sleep(5000)
-}
-
-func getTotalGTCombine(empire []ogame.EmpireCelestial, empireMoon []ogame.EmpireCelestial, bot *wrapper.OGame) int {
-	GT, PT, Eclaireur := GetTotalForExpeShips(empire)
-	GTM, PTM, EclaireurM := GetTotalForExpeShips(empireMoon)
-	GTF, PTF, ECLF := GetFleetsForCargo(bot)
-	GT += GTM + GTF
-	PT += PTM + PTF
-	Eclaireur += EclaireurM + ECLF
-
-	fmt.Printf("GT = %d PT = %d, Eclaireur = %d\n", GT, PT, Eclaireur)
-	total := GT + (PT / 5) + Eclaireur/(5/2)
-	fmt.Printf("GT Total = %d\n", total)
-	return total
 }
 
 func gestionMessagesExpe(bot *wrapper.OGame) {
