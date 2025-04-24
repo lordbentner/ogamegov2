@@ -6,7 +6,6 @@ import (
 	"net/url"
 	"os"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/alaingilbert/ogame/pkg/device"
@@ -71,15 +70,12 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	fmt.Println("================================================================")
 
 	//planetLife := empire[0]
+	lablvl12completed := true
 	for _, planete := range empire {
 		fmt.Printf("======================= planete %s(%s) =========================\n", planete.Name, planete.Coordinate)
-		st := strings.Contains(planete.Name, "Parc") || strings.Contains(planete.Name, "Santiago")
-		if st || strings.Contains(planete.Name, "Stade") || strings.Contains(planete.Name, "Emirates") {
-			if planete.Facilities.ResearchLab < 12 {
-				bot.BuildBuilding(planete.ID, ogame.ResearchLabID)
-			} else {
-				Researches(empire[0], bot, slots)
-			}
+		if planete.Facilities.ResearchLab < 12 {
+			bot.BuildBuilding(planete.ID, ogame.ResearchLabID)
+			lablvl12completed = false
 		}
 
 		if planete.Type == ogame.MoonType {
@@ -91,6 +87,10 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		buildFormeVie(planete, bot)
 		SetExpedition(planete, bot, coordExpe)
 		printCurrentconstruction(planete.ID, bot)
+	}
+
+	if lablvl12completed {
+		Researches(empire[0], bot, slots)
 	}
 
 	//sendTelegramMessage(botToken, chatID, empire[0])

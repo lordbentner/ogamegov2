@@ -34,7 +34,7 @@ func satProduction(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 }*/
 
 func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
-	bot.BuildBuilding(planete.ID, ogame.FusionPoweredProductionID)
+	//	bot.BuildBuilding(planete.ID, ogame.FusionPoweredProductionID)
 	bot.BuildBuilding(planete.ID, ogame.CrystalRefineryID)
 	if planete.LfBuildings.ResearchCentre < 5 {
 		bot.BuildBuilding(planete.ID, ogame.ResearchCentreID)
@@ -68,10 +68,17 @@ func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	bot.BuildTechnology(planete.ID, ogame.HighPerformanceExtractorsID)
 	bot.BuildTechnology(planete.ID, ogame.VolcanicBatteriesID)
 	bot.BuildTechnology(planete.ID, ogame.HighEnergyPumpSystemsID)
+	bot.BuildTechnology(planete.ID, ogame.MagmaPoweredProductionID)
+	bot.BuildTechnology(planete.ID, ogame.AutomatedTransportLinesID)
 }
 
 func buildMoon(moon ogame.EmpireCelestial, bot *wrapper.OGame) {
-	if moon.Fields.Built == moon.Fields.Total-1 {
+	if moon.Facilities.JumpGate > 0 {
+		return
+	}
+	if moon.Fields.Built == moon.Fields.Total-2 && moon.Facilities.RoboticsFactory > 8 {
+		bot.BuildBuilding(moon.ID, ogame.JumpGateID)
+	} else if moon.Fields.Built == moon.Fields.Total-1 {
 		bot.BuildBuilding(moon.ID, ogame.LunarBaseID)
 		fmt.Println("Construction base lunaire")
 	} else {
@@ -85,9 +92,9 @@ func buildResources(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	resDetails, _ := bot.GetResourcesDetails(planete.ID)
 	fmt.Println("Detail des ressources Métal ====>")
 	fmt.Printf("Available: %d , Storage cap.: %d Current production: %d\n", resDetails.Metal.Available, resDetails.Metal.StorageCapacity, resDetails.Metal.CurrentProduction)
-	if planete.Facilities.RoboticsFactory < 10 {
+	if planete.Facilities.RoboticsFactory < 12 {
 		bot.BuildBuilding(planete.ID, ogame.RoboticsFactoryID)
-	} else {
+	} else if planete.Facilities.NaniteFactory < 7 {
 		bot.BuildBuilding(planete.ID, ogame.NaniteFactoryID)
 	}
 
@@ -128,18 +135,16 @@ func buildResources(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.Slots) {
 	res, _ := bot.GetResearch()
 	id := planete.ID
-	fac, _ := bot.GetFacilities(id)
 
-	if fac.ResearchLab < 12 {
-		bot.BuildBuilding(id, ogame.ResearchLabID)
-	}
-
-	bot.BuildTechnology(id, ogame.IntergalacticResearchNetworkID)
 	if slots.Total-slots.ExpTotal < 1 || res.ComputerTechnology < 10 {
 		bot.BuildTechnology(id, ogame.ComputerTechnologyID)
 	}
 
 	bot.BuildTechnology(id, ogame.AstrophysicsID)
+
+	if res.EnergyTechnology < 12 {
+		bot.BuildTechnology(id, ogame.EnergyTechnologyID)
+	}
 
 	if res.ImpulseDrive < 5 {
 		bot.BuildTechnology(id, ogame.ImpulseDriveID)
@@ -177,4 +182,5 @@ func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.S
 	bot.BuildTechnology(id, ogame.PlasmaTechnologyID)
 	bot.BuildTechnology(id, ogame.WeaponsTechnologyID)
 	bot.BuildTechnology(id, ogame.ArmourTechnologyID)
+	bot.BuildTechnology(id, ogame.IntergalacticResearchNetworkID)
 }
