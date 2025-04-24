@@ -73,7 +73,8 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	//planetLife := empire[0]
 	for _, planete := range empire {
 		fmt.Printf("======================= planete %s(%s) =========================\n", planete.Name, planete.Coordinate)
-		if strings.Contains(planete.Name, "Parc") || strings.Contains(planete.Name, "Santiago") {
+		st := strings.Contains(planete.Name, "Parc") || strings.Contains(planete.Name, "Santiago")
+		if st || strings.Contains(planete.Name, "Stade") || strings.Contains(planete.Name, "Anfield") {
 			if planete.Facilities.ResearchLab < 12 {
 				bot.BuildBuilding(planete.ID, ogame.ResearchLabID)
 			} else {
