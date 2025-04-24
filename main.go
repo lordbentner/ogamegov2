@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"os"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/alaingilbert/ogame/pkg/device"
@@ -54,7 +55,6 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 
 	//getFastestResearch(empire[0], bot)
 	//os.Exit(1)
-	Researches(empire[0], bot, slots)
 	expeMes := gestionMessagesExpe(bot)
 	coordExpe := expeMes.Coordinate
 	fmt.Println(coordExpe)
@@ -73,6 +73,14 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	//planetLife := empire[0]
 	for _, planete := range empire {
 		fmt.Printf("======================= planete %s(%s) =========================\n", planete.Name, planete.Coordinate)
+		if strings.Contains(planete.Name, "Parc") || strings.Contains(planete.Name, "Santiago") {
+			if planete.Facilities.ResearchLab < 12 {
+				bot.BuildBuilding(planete.ID, ogame.ResearchLabID)
+			} else {
+				Researches(empire[0], bot, slots)
+			}
+		}
+
 		if planete.Type == ogame.MoonType {
 			buildMoon(planete, bot)
 		} else {
