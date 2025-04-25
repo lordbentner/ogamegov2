@@ -83,6 +83,8 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 			buildMoon(planete, bot)
 		} else if planete.Fields.Built < planete.Fields.Total-2 {
 			buildResources(planete, bot)
+		} else {
+			bot.BuildBuilding(planete.ID, ogame.TerraformerID)
 		}
 
 		buildFormeVie(planete, bot)
