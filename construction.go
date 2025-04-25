@@ -140,11 +140,11 @@ func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.S
 		bot.BuildTechnology(id, ogame.ComputerTechnologyID)
 	}
 
-	bot.BuildTechnology(id, ogame.AstrophysicsID)
-
 	if res.EnergyTechnology < 12 {
 		bot.BuildTechnology(id, ogame.EnergyTechnologyID)
 	}
+
+	bot.BuildTechnology(id, ogame.AstrophysicsID)
 
 	if res.ImpulseDrive < 5 {
 		bot.BuildTechnology(id, ogame.ImpulseDriveID)
