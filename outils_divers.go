@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/alaingilbert/ogame/pkg/ogame"
 	"github.com/alaingilbert/ogame/pkg/wrapper"
@@ -72,4 +73,14 @@ func changeSystemeExploration(content string) bool {
 	}
 
 	return false
+}
+
+func convertSecToTime(seconds int64) string {
+	duration := time.Duration(seconds) * time.Second
+
+	// Extraire les heures, minutes et secondes
+	hours := int(duration.Hours())
+	minutes := int(duration.Minutes()) % 60
+	secs := int(duration.Seconds()) % 60
+	return fmt.Sprintf("%02d:%02d:%02d\n", hours, minutes, secs)
 }

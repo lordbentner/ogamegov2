@@ -39,15 +39,16 @@ func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	bot.BuildBuilding(planete.ID, ogame.FusionPoweredProductionID)
 	bot.BuildBuilding(planete.ID, ogame.AcademyOfSciencesID)
 	bot.BuildBuilding(planete.ID, ogame.RuneForgeID)
-	if planete.LfBuildings.ResearchCentre < 5 {
+	if planete.LfBuildings.ResearchCentre < 5 || planete.LfBuildings.VortexChamber < 5 || planete.LfBuildings.RuneTechnologium < 5 {
 		bot.BuildBuilding(planete.ID, ogame.ResearchCentreID)
 		bot.BuildBuilding(planete.ID, ogame.RuneTechnologiumID)
+		bot.BuildBuilding(planete.ID, ogame.VortexChamberID)
 	} else {
 		bot.BuildBuilding(planete.ID, ogame.HighEnergySmeltingID)
 		bot.BuildBuilding(planete.ID, ogame.MagmaForgeID)
 	}
 
-	if planete.LfBuildings.ResidentialSector < 41 || planete.LfBuildings.MeditationEnclave < 41 {
+	if planete.LfBuildings.ResidentialSector < 41 || planete.LfBuildings.MeditationEnclave < 41 || planete.LfBuildings.Sanctuary < 41 {
 		hab := planete.LfBuildings.ResidentialSector
 		if planete.LfBuildings.MeditationEnclave > 0 {
 			hab = planete.LfBuildings.MeditationEnclave
@@ -63,16 +64,36 @@ func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 		}
 	}
 
-	if planete.LfBuildings.BiosphereFarm < 42 || planete.LfBuildings.CrystalFarm < 42 {
+	if planete.LfBuildings.BiosphereFarm < 42 || planete.LfBuildings.CrystalFarm < 42 || planete.LfBuildings.AntimatterCondenser < 42 {
 		bot.BuildBuilding(planete.ID, ogame.BiosphereFarmID)
 		bot.BuildBuilding(planete.ID, ogame.CrystalFarmID)
 	}
 
-	bot.BuildTechnology(planete.ID, ogame.HighPerformanceExtractorsID)
+	//bot.BuildTechnology(planete.ID, ogame.HighPerformanceExtractorsID)
+	bot.BuildTechnology(planete.ID, resFastestLifeForm(planete, bot))
 	bot.BuildTechnology(planete.ID, ogame.VolcanicBatteriesID)
 	bot.BuildTechnology(planete.ID, ogame.HighEnergyPumpSystemsID)
-	bot.BuildTechnology(planete.ID, ogame.MagmaPoweredProductionID)
-	bot.BuildTechnology(planete.ID, ogame.AutomatedTransportLinesID)
+	//bot.BuildTechnology(planete.ID, ogame.MagmaPoweredProductionID)
+	//bot.BuildTechnology(planete.ID, ogame.AutomatedTransportLinesID)
+	bot.BuildBuilding(planete.ID, ogame.CargoHoldExpansionCivilianShipsID)
+	ff, _ := bot.TechnologyDetails(planete.ID, ogame.AutomatedTransportLinesID)
+	fmt.Println(ff.ProductionDuration)
+}
+
+func resFastestLifeForm(planete ogame.EmpireCelestial, bot *wrapper.OGame) ogame.ID {
+	fast := ogame.AutomatedTransportLinesID
+	a, _ := bot.TechnologyDetails(planete.ID, ogame.AutomatedTransportLinesID)
+	h, _ := bot.TechnologyDetails(planete.ID, ogame.HighPerformanceExtractorsID)
+	m, _ := bot.TechnologyDetails(planete.ID, ogame.MagmaPoweredProductionID)
+	if a.ProductionDuration > h.ProductionDuration || a.ProductionDuration > m.ProductionDuration {
+		if h.ProductionDuration < m.ProductionDuration {
+			fast = ogame.HighPerformanceExtractorsID
+		} else {
+			fast = ogame.MagmaPoweredProductionID
+		}
+	}
+
+	return fast
 }
 
 func buildMoon(moon ogame.EmpireCelestial, bot *wrapper.OGame) {

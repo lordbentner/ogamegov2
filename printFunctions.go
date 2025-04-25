@@ -59,16 +59,16 @@ func printCurrentconstruction(id ogame.CelestialID, bot *wrapper.OGame) string {
 
 	print_str := "Construction en cours  ==> "
 	if buildingCountdown > 0 {
-		print_str += fmt.Sprintf("buildingID = %s, buildingCountdown = %d ", buildingID, buildingCountdown)
+		print_str += fmt.Sprintf("buildingID = %s, buildingCountdown = %s ", buildingID, convertSecToTime(buildingCountdown))
 	}
 	if researchCountdown > 0 {
-		print_str += fmt.Sprintf("researchID = %s, researchCountdown = %d ", researchID, researchCountdown)
+		print_str += fmt.Sprintf("researchID = %s, researchCountdown = %s ", researchID, convertSecToTime(researchCountdown))
 	}
 	if lfBuildingCountdown > 0 {
-		print_str += fmt.Sprintf("lfBuildingID = %s, lfBuildingCountdown = %d ", lfBuildingID, lfBuildingCountdown)
+		print_str += fmt.Sprintf("lfBuildingID = %s, lfBuildingCountdown = %s ", lfBuildingID, convertSecToTime(lfBuildingCountdown))
 	}
 	if lfResearchCountdown > 0 {
-		print_str += fmt.Sprintf("lfResearchID = %s, lfResearchCountdown = %d ", lfResearchID, lfResearchCountdown)
+		print_str += fmt.Sprintf("lfResearchID = %s, lfResearchCountdown = %s ", lfResearchID, convertSecToTime(lfResearchCountdown))
 	}
 
 	fmt.Println(print_str)
