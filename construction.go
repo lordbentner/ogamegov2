@@ -36,6 +36,7 @@ func satProduction(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	//	bot.BuildBuilding(planete.ID, ogame.FusionPoweredProductionID)
 	bot.BuildBuilding(planete.ID, ogame.CrystalRefineryID)
+	bot.BuildBuilding(planete.ID, ogame.FusionPoweredProductionID)
 	bot.BuildBuilding(planete.ID, ogame.AcademyOfSciencesID)
 	bot.BuildBuilding(planete.ID, ogame.RuneForgeID)
 	if planete.LfBuildings.ResearchCentre < 5 {
