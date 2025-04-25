@@ -95,7 +95,7 @@ func buildResources(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	resDetails, _ := bot.GetResourcesDetails(planete.ID)
 	fmt.Println("Detail des ressources Métal ====>")
 	fmt.Printf("Available: %d , Storage cap.: %d Current production: %d\n", resDetails.Metal.Available, resDetails.Metal.StorageCapacity, resDetails.Metal.CurrentProduction)
-	if planete.Facilities.RoboticsFactory < 12 {
+	if planete.Facilities.RoboticsFactory < 10 {
 		bot.BuildBuilding(planete.ID, ogame.RoboticsFactoryID)
 	} else if planete.Facilities.NaniteFactory < 7 {
 		bot.BuildBuilding(planete.ID, ogame.NaniteFactoryID)
