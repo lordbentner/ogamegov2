@@ -87,6 +87,7 @@ func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	}
 
 	bot.BuildTechnology(planete.ID, resFastestLifeForm(planete, bot))
+	bot.BuildTechnology(planete.ID, resFastestLifeFormKaelesh(planete, bot))
 	bot.BuildTechnology(planete.ID, ogame.VolcanicBatteriesID)
 	bot.BuildTechnology(planete.ID, ogame.HighEnergyPumpSystemsID)
 	bot.BuildBuilding(planete.ID, ogame.CargoHoldExpansionCivilianShipsID)
@@ -104,6 +105,22 @@ func resFastestLifeForm(planete ogame.EmpireCelestial, bot *wrapper.OGame) ogame
 			fast = ogame.HighPerformanceExtractorsID
 		} else {
 			fast = ogame.MagmaPoweredProductionID
+		}
+	}
+
+	return fast
+}
+
+func resFastestLifeFormKaelesh(planete ogame.EmpireCelestial, bot *wrapper.OGame) ogame.ID {
+	fast := ogame.EnhancedSensorTechnologyID
+	a, _ := bot.TechnologyDetails(planete.ID, ogame.PsionicNetworkID)
+	h, _ := bot.TechnologyDetails(planete.ID, ogame.EnhancedSensorTechnologyID)
+	m, _ := bot.TechnologyDetails(planete.ID, ogame.TelekineticTractorBeamID)
+	if a.ProductionDuration > h.ProductionDuration || a.ProductionDuration > m.ProductionDuration {
+		if h.ProductionDuration < m.ProductionDuration {
+			fast = ogame.EnhancedSensorTechnologyID
+		} else {
+			fast = ogame.TelekineticTractorBeamID
 		}
 	}
 

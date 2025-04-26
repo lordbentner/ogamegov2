@@ -59,8 +59,6 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		return
 	}
 
-	//getFastestResearch(empire[0], bot)
-	//os.Exit(1)
 	expeMes := gestionMessagesExpe(bot)
 	coordExpe := expeMes.Coordinate
 	fmt.Println(coordExpe)
