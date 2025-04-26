@@ -84,3 +84,15 @@ func convertSecToTime(seconds int64) string {
 	secs := int(duration.Seconds()) % 60
 	return fmt.Sprintf("%02d:%02d:%02d\n", hours, minutes, secs)
 }
+
+func getCargoGT(bot *wrapper.OGame) int64 {
+	lfBonuses, _ := bot.GetCachedLfBonuses()
+	multiplier := float64(bot.GetServerData().CargoHyperspaceTechMultiplier) / 100.0
+	return ogame.LargeCargo.GetCargoCapacity(bot.GetCachedResearch(), lfBonuses, bot.CharacterClass(), multiplier, bot.GetServer().ProbeRaidsEnabled())
+}
+
+func getCargoPT(bot *wrapper.OGame) int64 {
+	lfBonuses, _ := bot.GetCachedLfBonuses()
+	multiplier := float64(bot.GetServerData().CargoHyperspaceTechMultiplier) / 100.0
+	return ogame.SmallCargo.GetCargoCapacity(bot.GetCachedResearch(), lfBonuses, bot.CharacterClass(), multiplier, bot.GetServer().ProbeRaidsEnabled())
+}

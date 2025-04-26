@@ -33,13 +33,13 @@ func printStructFields(s interface{}) string {
 		field := typ.Field(i)
 		value := val.Field(i)
 
-		if value.Kind() == reflect.Int {
+		if value.Kind() == reflect.Int || value.Kind() == reflect.Int64 {
 			if int(value.Int()) > 0 {
 				print_str += fmt.Sprintf("%s: %v, ", field.Name, value.Interface())
 				nextLine++
 			}
 		} else if value.Interface() != "0" {
-			print_str += fmt.Sprintf("%s: %v, ", field.Name, value.Interface())
+			print_str += fmt.Sprintf("%s: ffff %v, ", field.Name, value.Interface())
 			nextLine++
 		}
 

@@ -36,9 +36,16 @@ func sendTelegramMessage(token, chatID, message string) {
 
 func getFlottePourExpe(bot *wrapper.OGame) {
 
-	slots, _ := bot.GetSlots()
+	//slots, _ := bot.GetSlots()
+	fleets, slots := bot.GetFleets()
+	fmt.Println("=====================Flottes=======================")
 	fmt.Printf("%s slots: ", time.Now().Format(time.RFC850))
 	fmt.Println(slots)
+	for i, fleet := range fleets {
+		fmt.Printf("flotte %d ==> ", i)
+		printStructFields(fleet.Ships)
+	}
+	fmt.Println("====================================================")
 	empire, _ := bot.GetEmpire(ogame.PlanetType)
 	empireMoon, _ := bot.GetEmpire(ogame.MoonType)
 	empire = append(empire, empireMoon...)
