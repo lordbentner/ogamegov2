@@ -18,20 +18,31 @@ func satProduction(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	}
 }
 
-/*func getFastestResearch(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
-	speed := 8
-	hasTechnocrat := false
-	lfbonuses, _ := bot.GetLfBonuses()
-	d_astro := ogame.Astrophysics.ConstructionTime(planete.Researches.Astrophysics+1, int64(speed), planete.Facilities, lfbonuses, ogame.Discoverer, hasTechnocrat)
-	d_hyper_techno := ogame.HyperspaceTechnology.ConstructionTime(planete.Researches.HyperspaceTechnology+1, int64(speed), planete.Facilities, lfbonuses, ogame.Discoverer, hasTechnocrat)
-	d_hyper_drive := ogame.HyperspaceTechnology.ConstructionTime(planete.Researches.HyperspaceDrive+1, int64(speed), planete.Facilities, lfbonuses, ogame.Discoverer, hasTechnocrat)
-	d_weapon := ogame.WeaponsTechnology.ConstructionTime(planete.Researches.WeaponsTechnology+1, int64(speed), planete.Facilities, lfbonuses, ogame.Discoverer, hasTechnocrat)
-	d_shield := ogame.ShieldingTechnology.ConstructionTime(planete.Researches.ShieldingTechnology+1, int64(speed), planete.Facilities, lfbonuses, ogame.Discoverer, hasTechnocrat)
+func getFastestResearch(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 
-	fmt.Printf("a = %d, ht = %d, hg = %d, wepon = %d", d_astro, d_hyper_techno, d_hyper_drive, d_weapon)
-	//(level int64, universeSpeed int64, facilities ogame.BuildAccelerators, lfBonuses ogame.LfBonuses, class ogame.CharacterClass, hasTechnocrat bool)
+	res, _ := bot.TechnologyDetails(planete.ID, ogame.EspionageProbeID)
+	for i := 107; i < 125; i++ {
+		if i == 112 {
+			continue
+		}
 
-}*/
+		id := ogame.ID(i)
+		if id == ogame.LaserTechnologyID || id == ogame.IonTechnologyID || id == ogame.EnergyTechnologyID {
+			continue
+		}
+
+		if id == ogame.EspionageTechnologyID && planete.Researches.EspionageTechnology > 7 {
+			continue
+		}
+
+		tech, _ := bot.TechnologyDetails(planete.ID, id)
+		if res.ProductionDuration > tech.ProductionDuration {
+			res = tech
+		}
+	}
+
+	bot.BuildTechnology(planete.ID, res.TechnologyID)
+}
 
 func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	//	bot.BuildBuilding(planete.ID, ogame.FusionPoweredProductionID)
@@ -52,29 +63,32 @@ func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 		hab := planete.LfBuildings.ResidentialSector
 		if planete.LfBuildings.MeditationEnclave > 0 {
 			hab = planete.LfBuildings.MeditationEnclave
+		} else if planete.LfBuildings.Sanctuary > 0 {
+			hab = planete.LfBuildings.Sanctuary
 		}
 
 		food := planete.LfBuildings.BiosphereFarm
 		if planete.LfBuildings.CrystalFarm > 0 {
 			food = planete.LfBuildings.CrystalFarm
+		} else if planete.LfBuildings.AntimatterCondenser > 0 {
+			food = planete.LfBuildings.AntimatterCondenser
 		}
 		if hab < food-1 {
 			bot.BuildBuilding(planete.ID, ogame.ResidentialSectorID)
 			bot.BuildBuilding(planete.ID, ogame.MeditationEnclaveID)
+			bot.BuildBuilding(planete.ID, ogame.SanctuaryID)
 		}
 	}
 
 	if planete.LfBuildings.BiosphereFarm < 42 || planete.LfBuildings.CrystalFarm < 42 || planete.LfBuildings.AntimatterCondenser < 42 {
 		bot.BuildBuilding(planete.ID, ogame.BiosphereFarmID)
 		bot.BuildBuilding(planete.ID, ogame.CrystalFarmID)
+		bot.BuildBuilding(planete.ID, ogame.AntimatterCondenserID)
 	}
 
-	//bot.BuildTechnology(planete.ID, ogame.HighPerformanceExtractorsID)
 	bot.BuildTechnology(planete.ID, resFastestLifeForm(planete, bot))
 	bot.BuildTechnology(planete.ID, ogame.VolcanicBatteriesID)
 	bot.BuildTechnology(planete.ID, ogame.HighEnergyPumpSystemsID)
-	//bot.BuildTechnology(planete.ID, ogame.MagmaPoweredProductionID)
-	//bot.BuildTechnology(planete.ID, ogame.AutomatedTransportLinesID)
 	bot.BuildBuilding(planete.ID, ogame.CargoHoldExpansionCivilianShipsID)
 	ff, _ := bot.TechnologyDetails(planete.ID, ogame.AutomatedTransportLinesID)
 	fmt.Println(ff.ProductionDuration)
@@ -160,9 +174,7 @@ func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.S
 	res, _ := bot.GetResearch()
 	id := planete.ID
 
-	if slots.Total-slots.ExpTotal < 1 || res.ComputerTechnology < 10 {
-		bot.BuildTechnology(id, ogame.ComputerTechnologyID)
-	}
+	getFastestResearch(planete, bot)
 
 	if res.EnergyTechnology < 12 {
 		bot.BuildTechnology(id, ogame.EnergyTechnologyID)
