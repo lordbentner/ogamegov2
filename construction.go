@@ -110,8 +110,8 @@ func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	bot.BuildTechnology(planete.ID, resFastestLifeForm(planete, bot))
 	bot.BuildTechnology(planete.ID, resFastestLifeFormKaelesh(planete, bot))
 	bot.BuildTechnology(planete.ID, ogame.VolcanicBatteriesID)
-	bot.BuildTechnology(planete.ID, ogame.HighEnergyPumpSystemsID)
 	bot.BuildBuilding(planete.ID, ogame.CargoHoldExpansionCivilianShipsID)
+	bot.BuildTechnology(planete.ID, ogame.HighEnergyPumpSystemsID)
 	ff, _ := bot.TechnologyDetails(planete.ID, ogame.AutomatedTransportLinesID)
 	fmt.Println(ff.ProductionDuration)
 }
@@ -121,13 +121,24 @@ func resFastestLifeForm(planete ogame.EmpireCelestial, bot *wrapper.OGame) ogame
 	a, _ := bot.TechnologyDetails(planete.ID, ogame.AutomatedTransportLinesID)
 	h, _ := bot.TechnologyDetails(planete.ID, ogame.HighPerformanceExtractorsID)
 	m, _ := bot.TechnologyDetails(planete.ID, ogame.MagmaPoweredProductionID)
-	if a.ProductionDuration > h.ProductionDuration || a.ProductionDuration > m.ProductionDuration {
+	e, _ := bot.TechnologyDetails(planete.ID, ogame.EnhancedProductionTechnologiesID)
+	list := []ogame.TechnologyDetails{a, h, m, e}
+	min := a.ProductionDuration
+
+	for _, elem := range list {
+		if elem.ProductionDuration > min {
+			min = elem.ProductionDuration
+			fast = elem.TechnologyID
+		}
+	}
+
+	/*if a.ProductionDuration > h.ProductionDuration || a.ProductionDuration > m.ProductionDuration || a.ProductionDuration > e.ProductionDuration {
 		if h.ProductionDuration < m.ProductionDuration {
 			fast = ogame.HighPerformanceExtractorsID
 		} else {
 			fast = ogame.MagmaPoweredProductionID
 		}
-	}
+	}*/
 
 	return fast
 }
