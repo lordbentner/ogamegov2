@@ -113,10 +113,14 @@ func getFleetCompositionForExplo(sh ogame.ShipsInfos, slotDispo int64, bot *wrap
 func SetExpedition(planete ogame.EmpireCelestial, bot *wrapper.OGame, coord ogame.Coordinate) {
 	sh, _ := bot.GetShips(planete.ID)
 	slots, _ := bot.GetSlots()
-	if slots.ExpInUse >= slots.ExpTotal || sh.SmallCargo == 0 /*|| sh.EspionageProbe == 0 || sh.Pathfinder == 0*/ || slots.InUse >= slots.Total {
+	if slots.ExpInUse >= slots.ExpTotal || planete.Ships.SmallCargo == 0 /*|| sh.EspionageProbe == 0 || sh.Pathfinder == 0*/ || slots.InUse >= slots.Total {
+		fmt.Println(slots)
+		fmt.Println(sh)
+		fmt.Println("Pas d'envoie de flotte pour l'instant ======================>")
 		return
 	}
 
+	fmt.Println("preparation envoi de flottte ===========================================>")
 	slotDispo := slots.ExpTotal - slots.ExpInUse
 	shipsInfos := getFleetCompositionForExplo(sh, slotDispo, bot)
 

@@ -47,17 +47,19 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	}
 	fmt.Println("====================================================")
 	empire, _ := bot.GetEmpire(ogame.PlanetType)
+	if len(empire) == 0 {
+		fmt.Println(empire)
+		return
+	}
+
+	first_planet := empire[0]
+
 	empireMoon, _ := bot.GetEmpire(ogame.MoonType)
 	empire = append(empire, empireMoon...)
 
 	sort.Slice(empire, func(i int, j int) bool {
 		return empire[i].Ships.LargeCargo > empire[j].Ships.LargeCargo
 	})
-
-	if len(empire) == 0 {
-		fmt.Println(empire)
-		return
-	}
 
 	expeMes := gestionMessagesExpe(bot)
 	coordExpe := expeMes.Coordinate
@@ -76,7 +78,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 
 	//planetLife := empire[0]
 	//lablvl12completed := true
-	Researches(empire[0], bot, slots)
+	Researches(first_planet, bot, slots)
 	for _, planete := range empire {
 		fmt.Printf("======================= planete %s(%s) =========================\n", planete.Name, planete.Coordinate)
 		if planete.Facilities.ResearchLab < 12 {
