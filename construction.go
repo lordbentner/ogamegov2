@@ -67,6 +67,10 @@ func getFastestResearch(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 }
 
 func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
+	if planete.Resources.Energy < 0 {
+		bot.BuildBuilding(planete.ID, ogame.DisruptionChamberID)
+	}
+
 	bot.BuildBuilding(planete.ID, ogame.CrystalRefineryID)
 	bot.BuildBuilding(planete.ID, ogame.FusionPoweredProductionID)
 	bot.BuildBuilding(planete.ID, ogame.AcademyOfSciencesID)

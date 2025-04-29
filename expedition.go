@@ -61,15 +61,6 @@ func getFleetCompositionForExplo(sh ogame.ShipsInfos, slotDispo int64, bot *wrap
 		shipsInfos.EspionageProbe = 10
 	}
 
-	shipsInfos.LargeCargo = sh.LargeCargo * 2 / slotDispo
-	shipsInfos.SmallCargo = sh.SmallCargo * 2 / slotDispo
-	shipsInfos.Pathfinder = sh.Pathfinder * 2 / slotDispo
-	if slotDispo == 1 {
-		shipsInfos.LargeCargo = sh.LargeCargo
-		shipsInfos.SmallCargo = sh.SmallCargo
-		shipsInfos.Pathfinder = sh.Pathfinder
-	}
-	shipsInfos.Pathfinder = sh.Pathfinder
 	if sh.Destroyer > 0 {
 		shipsInfos.Destroyer = 1
 	} else if sh.Battlecruiser > 0 {
@@ -84,6 +75,21 @@ func getFleetCompositionForExplo(sh ogame.ShipsInfos, slotDispo int64, bot *wrap
 		}
 	}
 
+	maxCargo := 100000000
+	shipsInfos.LargeCargo = int64(maxCargo) / getCargoGT(bot)
+	if shipsInfos.LargeCargo > sh.LargeCargo {
+		shipsInfos.LargeCargo = sh.LargeCargo
+		shipsInfos.SmallCargo = (int64(maxCargo) - shipsInfos.LargeCargo*getCargoGT(bot)) / getCargoPT(bot)
+		if shipsInfos.SmallCargo > sh.SmallCargo {
+			shipsInfos.SmallCargo = sh.SmallCargo
+			cap_gt := int64(maxCargo) - shipsInfos.LargeCargo*getCargoGT(bot)
+			shipsInfos.Pathfinder = (cap_gt - shipsInfos.SmallCargo*getCargoPT(bot)) / getCargoPathFinder(bot)
+			if shipsInfos.Pathfinder > sh.Pathfinder {
+				shipsInfos.Pathfinder = sh.Pathfinder
+			}
+		}
+	}
+
 	if shipsInfos.SmallCargo == 0 && sh.SmallCargo > 0 {
 		shipsInfos.SmallCargo++
 	}
@@ -92,19 +98,8 @@ func getFleetCompositionForExplo(sh ogame.ShipsInfos, slotDispo int64, bot *wrap
 		shipsInfos.LargeCargo++
 	}
 
-	maxCargo := 100000000
-
-	if shipsInfos.LargeCargo*getCargoGT(bot)+shipsInfos.SmallCargo*getCargoPT(bot) > int64(maxCargo) {
-		shipsInfos.LargeCargo = int64(maxCargo) / getCargoGT(bot)
-		if shipsInfos.LargeCargo > 0 {
-			shipsInfos.SmallCargo = int64(maxCargo) / (shipsInfos.LargeCargo * getCargoGT(bot))
-		} else {
-			shipsInfos.SmallCargo = int64(maxCargo) / getCargoPT(bot)
-		}
-
-		if shipsInfos.Pathfinder > 0 {
-			shipsInfos.Pathfinder = 1
-		}
+	if shipsInfos.Pathfinder == 0 && sh.Pathfinder > 0 {
+		shipsInfos.Pathfinder++
 	}
 
 	return shipsInfos

@@ -96,3 +96,9 @@ func getCargoPT(bot *wrapper.OGame) int64 {
 	multiplier := float64(bot.GetServerData().CargoHyperspaceTechMultiplier) / 100.0
 	return ogame.SmallCargo.GetCargoCapacity(bot.GetCachedResearch(), lfBonuses, bot.CharacterClass(), multiplier, bot.GetServer().ProbeRaidsEnabled())
 }
+
+func getCargoPathFinder(bot *wrapper.OGame) int64 {
+	lfBonuses, _ := bot.GetCachedLfBonuses()
+	multiplier := float64(bot.GetServerData().CargoHyperspaceTechMultiplier) / 100.0
+	return ogame.Pathfinder.GetCargoCapacity(bot.GetCachedResearch(), lfBonuses, bot.CharacterClass(), multiplier, bot.GetServer().ProbeRaidsEnabled())
+}
