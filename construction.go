@@ -111,7 +111,10 @@ func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 		bot.BuildBuilding(planete.ID, ogame.AntimatterCondenserID)
 	}
 
-	bot.BuildTechnology(planete.ID, resFastestLifeForm(planete, bot))
+	res1 := resFastestLifeForm(planete, bot)
+	fmt.Printf("kjjkjk %s ", planete.Coordinate)
+	fmt.Println(res1)
+	bot.BuildTechnology(planete.ID, res1)
 	bot.BuildTechnology(planete.ID, resFastestLifeFormKaelesh(planete, bot))
 	bot.BuildTechnology(planete.ID, ogame.VolcanicBatteriesID)
 	bot.BuildBuilding(planete.ID, ogame.CargoHoldExpansionCivilianShipsID)
@@ -127,11 +130,13 @@ func resFastestLifeForm(planete ogame.EmpireCelestial, bot *wrapper.OGame) ogame
 	m, _ := bot.TechnologyDetails(planete.ID, ogame.MagmaPoweredProductionID)
 	e, _ := bot.TechnologyDetails(planete.ID, ogame.EnhancedProductionTechnologiesID)
 	list := []ogame.TechnologyDetails{a, h, m, e}
-	min := a.ProductionDuration
+	fmt.Println("ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé")
+	fmt.Println(list)
+	min := a.Level
 
 	for _, elem := range list {
-		if elem.ProductionDuration > min {
-			min = elem.ProductionDuration
+		if elem.Level > min {
+			min = elem.Level
 			fast = elem.TechnologyID
 		}
 	}
