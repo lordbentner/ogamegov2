@@ -73,6 +73,7 @@ func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 
 	bot.BuildBuilding(planete.ID, ogame.CrystalRefineryID)
 	bot.BuildBuilding(planete.ID, ogame.FusionPoweredProductionID)
+	bot.BuildBuilding(planete.ID, ogame.NeuroCalibrationCentreID)
 	bot.BuildBuilding(planete.ID, ogame.AcademyOfSciencesID)
 	bot.BuildBuilding(planete.ID, ogame.RuneForgeID)
 	if planete.LfBuildings.ResearchCentre < 5 || planete.LfBuildings.VortexChamber < 5 || planete.LfBuildings.RuneTechnologium < 5 {
@@ -129,25 +130,17 @@ func resFastestLifeForm(planete ogame.EmpireCelestial, bot *wrapper.OGame) ogame
 	h, _ := bot.TechnologyDetails(planete.ID, ogame.HighPerformanceExtractorsID)
 	m, _ := bot.TechnologyDetails(planete.ID, ogame.MagmaPoweredProductionID)
 	e, _ := bot.TechnologyDetails(planete.ID, ogame.EnhancedProductionTechnologiesID)
-	list := []ogame.TechnologyDetails{a, h, m, e}
-	fmt.Println("ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé")
-	fmt.Println(list)
-	min := a.Level
+	s, _ := bot.TechnologyDetails(planete.ID, ogame.DepthSoundingID)
+	list := []ogame.TechnologyDetails{a, h, m, e, s}
+	min := (a.Price.Crystal + a.Price.Metal + a.Price.Deuterium) * (a.Level + 1)
 
 	for _, elem := range list {
-		if elem.Level > min {
-			min = elem.Level
+		basecost := (elem.Price.Crystal + elem.Price.Metal + elem.Price.Deuterium) * (elem.Level + 1)
+		if basecost < min {
+			min = basecost
 			fast = elem.TechnologyID
 		}
 	}
-
-	/*if a.ProductionDuration > h.ProductionDuration || a.ProductionDuration > m.ProductionDuration || a.ProductionDuration > e.ProductionDuration {
-		if h.ProductionDuration < m.ProductionDuration {
-			fast = ogame.HighPerformanceExtractorsID
-		} else {
-			fast = ogame.MagmaPoweredProductionID
-		}
-	}*/
 
 	return fast
 }
@@ -157,11 +150,15 @@ func resFastestLifeFormKaelesh(planete ogame.EmpireCelestial, bot *wrapper.OGame
 	a, _ := bot.TechnologyDetails(planete.ID, ogame.PsionicNetworkID)
 	h, _ := bot.TechnologyDetails(planete.ID, ogame.EnhancedSensorTechnologyID)
 	m, _ := bot.TechnologyDetails(planete.ID, ogame.TelekineticTractorBeamID)
-	if a.ProductionDuration > h.ProductionDuration || a.ProductionDuration > m.ProductionDuration {
-		if h.ProductionDuration < m.ProductionDuration {
-			fast = ogame.EnhancedSensorTechnologyID
-		} else {
-			fast = ogame.TelekineticTractorBeamID
+
+	list := []ogame.TechnologyDetails{a, h, m}
+	min := (a.Price.Crystal + a.Price.Metal + a.Price.Deuterium) * (a.Level + 1)
+
+	for _, elem := range list {
+		basecost := (elem.Price.Crystal + elem.Price.Metal + elem.Price.Deuterium) * (elem.Level + 1)
+		if basecost < min {
+			min = basecost
+			fast = elem.TechnologyID
 		}
 	}
 
