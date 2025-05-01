@@ -64,6 +64,13 @@ func getFastestResearch(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	fmt.Println(id_tech)
 }
 
+func buildFormeVieHumans(planete ogame.EmpireCelestial) {
+	boot.BuildBuilding(planete.ID, ogame.NeuroCalibrationCentreID)
+	boot.BuildBuilding(planete.ID, ogame.MetropolisID)
+	boot.BuildBuilding(planete.ID, ogame.CrystalRefineryID)
+	boot.BuildBuilding(planete.ID, ogame.FusionPoweredProductionID)
+}
+
 func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	if planete.Resources.Energy < 0 {
 		bot.BuildBuilding(planete.ID, ogame.DisruptionChamberID)
@@ -85,7 +92,10 @@ func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 		bot.BuildBuilding(planete.ID, ogame.MagmaForgeID)
 	}
 
-	if planete.LfBuildings.ResidentialSector < 41 || planete.LfBuildings.MeditationEnclave < 41 || planete.LfBuildings.Sanctuary < 41 {
+	res := planete.LfBuildings.ResidentialSector < 41 && planete.LfBuildings.ResidentialSector > 0
+	med := planete.LfBuildings.MeditationEnclave < 41 && planete.LfBuildings.MeditationEnclave > 0
+	san := planete.LfBuildings.Sanctuary < 41 && planete.LfBuildings.Sanctuary > 0
+	if res || med || san {
 		hab := planete.LfBuildings.ResidentialSector
 		if planete.LfBuildings.MeditationEnclave > 0 {
 			hab = planete.LfBuildings.MeditationEnclave
@@ -106,7 +116,10 @@ func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 		}
 	}
 
-	if planete.LfBuildings.BiosphereFarm < 42 || planete.LfBuildings.CrystalFarm < 42 || planete.LfBuildings.AntimatterCondenser < 42 {
+	bio := planete.LfBuildings.BiosphereFarm < 42 && planete.LfBuildings.BiosphereFarm > 0
+	cry := planete.LfBuildings.CrystalFarm < 42 && planete.LfBuildings.CrystalFarm > 0
+	ant := planete.LfBuildings.AntimatterCondenser < 42 && planete.LfBuildings.AntimatterCondenser > 0
+	if bio || cry || ant {
 		bot.BuildBuilding(planete.ID, ogame.BiosphereFarmID)
 		bot.BuildBuilding(planete.ID, ogame.CrystalFarmID)
 		bot.BuildBuilding(planete.ID, ogame.AntimatterCondenserID)

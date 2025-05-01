@@ -16,6 +16,7 @@ import (
 
 var botToken string
 var chatID string
+var boot *wrapper.OGame
 
 func sendTelegramMessage(token, chatID, message string) {
 	apiURL := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", token)
