@@ -46,9 +46,9 @@ func getFastestResearch(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 		}
 
 		level = int64(planete.Researches.Astrophysics) + 1
-		/*if id == ogame.LaserTechnologyID || id == ogame.IonTechnologyID || id == ogame.EnergyTechnologyID {
+		if id == ogame.LaserTechnologyID || id == ogame.IonTechnologyID || id == ogame.EnergyTechnologyID {
 			continue
-		}*/
+		}
 
 		if id == ogame.EspionageTechnologyID && planete.Researches.EspionageTechnology > 7 {
 			continue
@@ -62,8 +62,6 @@ func getFastestResearch(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	}
 
 	fmt.Println(id_tech)
-	//bot.BuildTechnology(planete.ID, id_tech)
-	//os.Exit(0)
 }
 
 func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
@@ -71,9 +69,11 @@ func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 		bot.BuildBuilding(planete.ID, ogame.DisruptionChamberID)
 	}
 
+	bot.BuildBuilding(planete.ID, ogame.NeuroCalibrationCentreID)
+	bot.BuildBuilding(planete.ID, ogame.MetropolisID)
+	bot.BuildBuilding(planete.ID, ogame.MegalithID)
 	bot.BuildBuilding(planete.ID, ogame.CrystalRefineryID)
 	bot.BuildBuilding(planete.ID, ogame.FusionPoweredProductionID)
-	bot.BuildBuilding(planete.ID, ogame.NeuroCalibrationCentreID)
 	bot.BuildBuilding(planete.ID, ogame.AcademyOfSciencesID)
 	bot.BuildBuilding(planete.ID, ogame.RuneForgeID)
 	if planete.LfBuildings.ResearchCentre < 5 || planete.LfBuildings.VortexChamber < 5 || planete.LfBuildings.RuneTechnologium < 5 {
