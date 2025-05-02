@@ -67,18 +67,27 @@ func getFastestResearch(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 func buildFormeVieHumans(planete ogame.EmpireCelestial) {
 	boot.BuildBuilding(planete.ID, ogame.NeuroCalibrationCentreID)
 	boot.BuildBuilding(planete.ID, ogame.MetropolisID)
-	boot.BuildBuilding(planete.ID, ogame.CrystalRefineryID)
 	boot.BuildBuilding(planete.ID, ogame.FusionPoweredProductionID)
 	boot.BuildBuilding(planete.ID, ogame.AcademyOfSciencesID)
 	boot.BuildBuilding(planete.ID, ogame.SkyscraperID)
 }
 
-func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
+func buildFormeVieRocktas(planete ogame.EmpireCelestial) {
 	if planete.Resources.Energy < 0 {
-		bot.BuildBuilding(planete.ID, ogame.DisruptionChamberID)
+		boot.BuildBuilding(planete.ID, ogame.DisruptionChamberID)
 	}
 
+	boot.BuildBuilding(planete.ID, ogame.MegalithID)
+	boot.BuildBuilding(planete.ID, ogame.OriktoriumID)
+	boot.BuildBuilding(planete.ID, ogame.RuneForgeID)
+	boot.BuildBuilding(planete.ID, ogame.MagmaForgeID)
+	boot.BuildBuilding(planete.ID, ogame.CrystalRefineryID)
+	boot.BuildBuilding(planete.ID, ogame.DeuteriumSynthesiserID)
+}
+
+func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	buildFormeVieHumans(planete)
+	buildFormeVieRocktas(planete)
 	bot.BuildBuilding(planete.ID, ogame.RuneForgeID)
 	if planete.LfBuildings.ResearchCentre < 5 || planete.LfBuildings.VortexChamber < 5 || planete.LfBuildings.RuneTechnologium < 5 {
 		bot.BuildBuilding(planete.ID, ogame.ResearchCentreID)
