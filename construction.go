@@ -69,6 +69,8 @@ func buildFormeVieHumans(planete ogame.EmpireCelestial) {
 	boot.BuildBuilding(planete.ID, ogame.MetropolisID)
 	boot.BuildBuilding(planete.ID, ogame.CrystalRefineryID)
 	boot.BuildBuilding(planete.ID, ogame.FusionPoweredProductionID)
+	boot.BuildBuilding(planete.ID, ogame.AcademyOfSciencesID)
+	boot.BuildBuilding(planete.ID, ogame.SkyscraperID)
 }
 
 func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
@@ -76,12 +78,7 @@ func buildFormeVie(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 		bot.BuildBuilding(planete.ID, ogame.DisruptionChamberID)
 	}
 
-	bot.BuildBuilding(planete.ID, ogame.NeuroCalibrationCentreID)
-	bot.BuildBuilding(planete.ID, ogame.MetropolisID)
-	bot.BuildBuilding(planete.ID, ogame.MegalithID)
-	bot.BuildBuilding(planete.ID, ogame.CrystalRefineryID)
-	bot.BuildBuilding(planete.ID, ogame.FusionPoweredProductionID)
-	bot.BuildBuilding(planete.ID, ogame.AcademyOfSciencesID)
+	buildFormeVieHumans(planete)
 	bot.BuildBuilding(planete.ID, ogame.RuneForgeID)
 	if planete.LfBuildings.ResearchCentre < 5 || planete.LfBuildings.VortexChamber < 5 || planete.LfBuildings.RuneTechnologium < 5 {
 		bot.BuildBuilding(planete.ID, ogame.ResearchCentreID)

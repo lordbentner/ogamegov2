@@ -161,6 +161,7 @@ func main() {
 func connect(bot *wrapper.OGame) bool {
 	fmt.Printf("%s Connexion", time.Now().Format(time.RFC850))
 	bot.LoginWithExistingCookies()
+	boot = bot
 	time.Sleep(5000)
 	getFlottePourExpe(bot)
 	bot.Logout()
