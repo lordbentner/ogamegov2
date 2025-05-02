@@ -36,7 +36,10 @@ func sendTelegramMessage(token, chatID, message string) {
 //var incrExploVie int = 0
 
 func getFlottePourExpe(bot *wrapper.OGame) {
-
+	att, _ := bot.IsUnderAttack()
+	if att {
+		sendTelegramMessage(botToken, chatID, "ATTACK EN COURS!")
+	}
 	//slots, _ := bot.GetSlots()
 	fleets, slots := bot.GetFleets()
 	fmt.Println("=====================Flottes=======================")
@@ -95,12 +98,10 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 			bot.BuildBuilding(planete.ID, ogame.TerraformerID)
 		}
 
-		buildFormeVie(planete, bot)
+		buildFormeVie(planete)
 		SetExpedition(planete, bot, coordExpe)
 		printCurrentconstruction(planete.ID, bot)
 	}
-
-	//sendTelegramMessage(botToken, chatID, empire[0])
 
 	//setExploVie(planetLife.ID, planetLife.Coordinate, bot)
 }
