@@ -13,7 +13,7 @@ func satProduction(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
 	satprod := ogame.SolarSatellite.Production(planete.Temperature, 1, true)
 	cenprice := 20 * math.Pow(1.1, float64(planete.Supplies.SolarPlant))
 	fmt.Printf("%s(%s) cout centrale de solaire : %f production solaire: %d\n", planete.Name, planete.Coordinate, cenprice, satprod)
-	if cenprice > float64(satprod*2000) {
+	if cenprice > float64(satprod) {
 		bot.BuildShips(planete.ID, ogame.SolarSatelliteID, 1)
 	}
 }
@@ -128,11 +128,13 @@ func resFastestLifeForm(planete ogame.EmpireCelestial, bot *wrapper.OGame) ogame
 	m, _ := bot.TechnologyDetails(planete.ID, ogame.MagmaPoweredProductionID)
 	e, _ := bot.TechnologyDetails(planete.ID, ogame.EnhancedProductionTechnologiesID)
 	s, _ := bot.TechnologyDetails(planete.ID, ogame.DepthSoundingID)
-	list := []ogame.TechnologyDetails{a, h, m, e, s}
-	min := (a.Price.Crystal + a.Price.Metal + a.Price.Deuterium) * (a.Level + 1)
+	p, _ := bot.TechnologyDetails(planete.ID, ogame.PsychoharmoniserID)
+	t, _ := bot.TechnologyDetails(planete.ID, ogame.HardenedDiamondDrillHeadsID)
+	list := []ogame.TechnologyDetails{a, h, m, e, s, p, t}
+	min := int64(a.ProductionDuration.Seconds()) * (a.Level + 1)
 
 	for _, elem := range list {
-		basecost := (elem.Price.Crystal + elem.Price.Metal + elem.Price.Deuterium) * (elem.Level + 1)
+		basecost := int64(elem.ProductionDuration.Seconds()) * (elem.Level + 1)
 		if basecost < min {
 			min = basecost
 			fast = elem.TechnologyID
@@ -147,12 +149,12 @@ func resFastestLifeFormKaelesh(planete ogame.EmpireCelestial, bot *wrapper.OGame
 	a, _ := bot.TechnologyDetails(planete.ID, ogame.PsionicNetworkID)
 	h, _ := bot.TechnologyDetails(planete.ID, ogame.EnhancedSensorTechnologyID)
 	m, _ := bot.TechnologyDetails(planete.ID, ogame.TelekineticTractorBeamID)
-
+	//6/443/9
 	list := []ogame.TechnologyDetails{a, h, m}
-	min := (a.Price.Crystal + a.Price.Metal + a.Price.Deuterium) * (a.Level + 1)
+	min := int64(a.ProductionDuration.Seconds()) * (a.Level + 1)
 
 	for _, elem := range list {
-		basecost := (elem.Price.Crystal + elem.Price.Metal + elem.Price.Deuterium) * (elem.Level + 1)
+		basecost := int64(elem.ProductionDuration.Seconds()) * (elem.Level + 1)
 		if basecost < min {
 			min = basecost
 			fast = elem.TechnologyID
