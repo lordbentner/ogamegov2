@@ -115,12 +115,15 @@ func SetExpedition(planete ogame.EmpireCelestial, bot *wrapper.OGame, coord ogam
 		return
 	}
 
-	fmt.Println("preparation envoi de flottte ===========================================>")
+	fmt.Println("preparation envoi de flotte ===========================================>")
 	slotDispo := slots.ExpTotal - slots.ExpInUse
 	shipsInfos := getFleetCompositionForExplo(sh, slotDispo, bot)
 
 	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System, Position: 16}
-	bot.SendFleet(planete.ID, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
+	_, err := bot.SendFleet(planete.ID, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
+	if err != nil {
+		bot.SendFleet(planete.ID, shipsInfos, 100, planete.Coordinate, ogame.Expedition, ogame.Resources{}, 0, 0)
+	}
 	fmt.Printf("fleet send to expedition from %s with this fleet: ", coord.String())
 	printStructFields(shipsInfos)
 	printShipsInfos(shipsInfos)
@@ -130,7 +133,6 @@ func SetExpedition(planete ogame.EmpireCelestial, bot *wrapper.OGame, coord ogam
 func gestionMessagesExpe(bot *wrapper.OGame) ogame.ExpeditionMessage {
 	expMes, err := bot.GetExpeditionMessages(1)
 	if err == nil {
-		fmt.Println("kjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj dautres messages apparaissent")
 		for i := 2; i < 20; i++ {
 			exptest, er := bot.GetExpeditionMessages(int64(i))
 			if er != nil {

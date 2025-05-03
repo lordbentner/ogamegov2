@@ -39,7 +39,7 @@ func printStructFields(s interface{}) string {
 				nextLine++
 			}
 		} else if value.Interface() != "0" {
-			print_str += fmt.Sprintf("%s: ffff %v, ", field.Name, value.Interface())
+			print_str += fmt.Sprintf("%s: %v, ", field.Name, value.Interface())
 			nextLine++
 		}
 
@@ -73,41 +73,6 @@ func printCurrentconstruction(id ogame.CelestialID, bot *wrapper.OGame) string {
 
 	fmt.Println(print_str)
 	return print_str
-}
-
-func showCargo(bot *wrapper.OGame, planete ogame.EmpireCelestial, slots ogame.Slots) {
-	lfBonuses, _ := bot.GetCachedLfBonuses()
-	multiplier := float64(bot.GetServerData().CargoHyperspaceTechMultiplier) / 100.0
-	cargo := planete.Ships.Cargo(bot.GetCachedResearch(), lfBonuses, bot.CharacterClass(), multiplier, bot.GetServer().ProbeRaidsEnabled())
-	cargoExpe := cargo / slots.ExpTotal
-	cargoGT := ogame.LargeCargo.GetCargoCapacity(bot.GetCachedResearch(), lfBonuses, bot.CharacterClass(), multiplier, bot.GetServer().ProbeRaidsEnabled())
-	fmt.Printf("cargo total =%d, cargo par expe = %d\n, cargo GT = %d", cargo, cargoExpe, cargoGT)
-}
-
-func GetTotalForExpeShips(empire []ogame.EmpireCelestial) (int, int, int) {
-	GT := 0
-	PT := 0
-	Eclaireur := 0
-
-	for _, planete := range empire {
-		ships := planete.Ships
-		printShips(planete)
-		GT = GT + int(ships.LargeCargo)
-		PT = PT + int(ships.SmallCargo)
-		Eclaireur = Eclaireur + int(ships.Pathfinder)
-	}
-
-	return GT, PT, Eclaireur
-}
-
-func printShips(planete ogame.EmpireCelestial) {
-	fmt.Println(planete.Name + " : " + planete.Coordinate.String())
-	fmt.Print(planete.Ships.LargeCargo)
-	fmt.Print(" GT,  ")
-	fmt.Print(planete.Ships.SmallCargo)
-	fmt.Print(" PT, ")
-	fmt.Print(planete.Ships.Pathfinder)
-	fmt.Println(" Eclaireur")
 }
 
 func printShipsInfos(ships ogame.ShipsInfos) {
