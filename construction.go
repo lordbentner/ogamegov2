@@ -9,12 +9,12 @@ import (
 	"github.com/alaingilbert/ogame/pkg/wrapper"
 )
 
-func satProduction(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
+func satProduction(planete ogame.EmpireCelestial) {
 	satprod := ogame.SolarSatellite.Production(planete.Temperature, 1, true)
 	cenprice := 20 * math.Pow(1.1, float64(planete.Supplies.SolarPlant))
 	fmt.Printf("%s(%s) cout centrale de solaire : %f production solaire: %d\n", planete.Name, planete.Coordinate, cenprice, satprod)
 	if cenprice > float64(satprod) {
-		bot.BuildShips(planete.ID, ogame.SolarSatelliteID, 1)
+		boot.BuildShips(planete.ID, ogame.SolarSatelliteID, 1)
 	}
 }
 
@@ -68,9 +68,36 @@ func buildFormeVieRocktas(planete ogame.EmpireCelestial) {
 	boot.BuildBuilding(planete.ID, ogame.DeuteriumSynthesiserID)
 }
 
+func buildFormeVieKaelesh(planete ogame.EmpireCelestial) {
+	/*	Sanctuary                  int64 // 14101 // Lifeform (kaelesh)
+		AntimatterCondenser        int64 // 14102
+		VortexChamber              int64 // 14103
+		HallsOfRealisation         int64 // 14104
+		ForumOfTranscendence       int64 // 14105
+		AntimatterConvector        int64 // 14106
+		CloningLaboratory          int64 // 14107
+		ChrysalisAccelerator       int64 // 14108
+		BioModifier                int64 // 14109
+		PsionicModulator           int64 // 14110
+		ShipManufacturingHall      int64 // 14111
+		SupraRefractor             int64 // 14112*/
+
+	boot.BuildBuilding(planete.ID, ogame.HallsOfRealisationID)
+	boot.BuildBuilding(planete.ID, ogame.ForumOfTranscendenceID)
+	if planete.LfBuildings.AntimatterConvector+3 < planete.LfBuildings.CloningLaboratory {
+		boot.BuildBuilding(planete.ID, ogame.AntimatterConvectorID)
+	} else {
+		boot.BuildBuilding(planete.ID, ogame.CloningLaboratoryID)
+	}
+
+	boot.BuildBuilding(planete.ID, ogame.ChrysalisAcceleratorID)
+	boot.BuildBuilding(planete.ID, ogame.PsionicModulatorID)
+}
+
 func buildFormeVie(planete ogame.EmpireCelestial) {
 	buildFormeVieHumans(planete)
 	buildFormeVieRocktas(planete)
+	buildFormeVieKaelesh(planete)
 	boot.BuildBuilding(planete.ID, ogame.RuneForgeID)
 	if planete.LfBuildings.ResearchCentre < 5 || planete.LfBuildings.VortexChamber < 5 || planete.LfBuildings.RuneTechnologium < 5 {
 		boot.BuildBuilding(planete.ID, ogame.ResearchCentreID)
@@ -179,56 +206,54 @@ func buildMoon(moon ogame.EmpireCelestial, bot *wrapper.OGame) {
 	}
 }
 
-func buildResources(planete ogame.EmpireCelestial, bot *wrapper.OGame) {
+func buildResources(planete ogame.EmpireCelestial) {
 	time.Sleep(10000)
-	resDetails, _ := bot.GetResourcesDetails(planete.ID)
+	resDetails, _ := boot.GetResourcesDetails(planete.ID)
 	fmt.Println("Detail des ressources Métal ====>")
 	fmt.Printf("Available: %d , Storage cap.: %d Current production: %d\n", resDetails.Metal.Available, resDetails.Metal.StorageCapacity, resDetails.Metal.CurrentProduction)
 	if planete.Facilities.RoboticsFactory < 10 {
-		bot.BuildBuilding(planete.ID, ogame.RoboticsFactoryID)
+		boot.BuildBuilding(planete.ID, ogame.RoboticsFactoryID)
 	} else if planete.Facilities.NaniteFactory < 7 {
-		bot.BuildBuilding(planete.ID, ogame.NaniteFactoryID)
+		boot.BuildBuilding(planete.ID, ogame.NaniteFactoryID)
 	}
 
 	if resDetails.Crystal.StorageCapacity-resDetails.Crystal.StorageCapacity/10 < planete.Resources.Crystal {
-		bot.BuildBuilding(planete.ID, ogame.CrystalStorageID)
+		boot.BuildBuilding(planete.ID, ogame.CrystalStorageID)
 	} else if resDetails.Deuterium.StorageCapacity-resDetails.Deuterium.StorageCapacity/10 < planete.Resources.Deuterium {
-		bot.BuildBuilding(planete.ID, ogame.DeuteriumTankID)
+		boot.BuildBuilding(planete.ID, ogame.DeuteriumTankID)
 	} else if resDetails.Metal.StorageCapacity-resDetails.Metal.StorageCapacity/10 < planete.Resources.Metal {
-		bot.BuildBuilding(planete.ID, ogame.MetalStorageID)
+		boot.BuildBuilding(planete.ID, ogame.MetalStorageID)
 	}
 
 	printStructFields(planete.Supplies)
 	if resDetails.Metal.CurrentProduction > 0 || resDetails.Crystal.CurrentProduction > 0 {
 		if planete.Resources.Energy < 0 {
-			err := bot.BuildBuilding(planete.ID, ogame.SolarPlantID)
+			err := boot.BuildBuilding(planete.ID, ogame.SolarPlantID)
 			if err != nil {
-				satProduction(planete, bot)
+				satProduction(planete)
 			} else {
 				fmt.Println("construction solar plant")
 			}
 		} else if planete.Supplies.DeuteriumSynthesizer < int64(planete.Supplies.CrystalMine-3) {
-			err := bot.BuildBuilding(planete.ID, 3)
+			err := boot.BuildBuilding(planete.ID, 3)
 			fmt.Printf("construction synthethiseur deuterium err =%s\n", err)
 		} else if planete.Supplies.CrystalMine < int64(planete.Supplies.MetalMine-3) {
-			err := bot.BuildBuilding(planete.ID, 2)
+			err := boot.BuildBuilding(planete.ID, 2)
 			fmt.Printf("construction crystal mine err =%s\n", err)
 		} else {
-			err := bot.BuildBuilding(planete.ID, 1)
+			err := boot.BuildBuilding(planete.ID, 1)
 			fmt.Printf("construction metal mine err =%s\n", err)
 		}
 	}
 
 	if planete.Facilities.Shipyard < 12 {
-		bot.BuildBuilding(planete.ID, ogame.ShipyardID)
+		boot.BuildBuilding(planete.ID, ogame.ShipyardID)
 	}
 }
 
 func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.Slots) {
 	res, _ := bot.GetResearch()
 	id := planete.ID
-
-	getFastestResearch(planete)
 
 	if res.EnergyTechnology < 12 {
 		bot.BuildTechnology(id, ogame.EnergyTechnologyID)
@@ -238,7 +263,7 @@ func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.S
 		bot.BuildTechnology(id, ogame.ImpulseDriveID)
 	}
 
-	if res.EspionageTechnology < 5 {
+	if res.EspionageTechnology < 8 {
 		bot.BuildTechnology(id, ogame.EspionageTechnologyID)
 	}
 
@@ -266,6 +291,8 @@ func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.S
 	if res.IonTechnology < 5 {
 		bot.BuildTechnology(id, ogame.IonTechnologyID)
 	}
+
+	getFastestResearch(planete)
 
 	bot.BuildTechnology(id, ogame.PlasmaTechnologyID)
 	bot.BuildTechnology(id, ogame.WeaponsTechnologyID)

@@ -33,8 +33,6 @@ func sendTelegramMessage(token, chatID, message string) {
 	fmt.Println("✅ Message envoyé avec succès.")
 }
 
-//var incrExploVie int = 0
-
 func getFlottePourExpe(bot *wrapper.OGame) {
 	att, _ := bot.IsUnderAttack()
 	if att {
@@ -99,7 +97,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		if planete.Type == ogame.MoonType {
 			buildMoon(planete, bot)
 		} else if planete.Fields.Built < planete.Fields.Total-2 {
-			buildResources(planete, bot)
+			buildResources(planete)
 		} else {
 			bot.BuildBuilding(planete.ID, ogame.TerraformerID)
 		}

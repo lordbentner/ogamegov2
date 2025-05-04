@@ -8,15 +8,6 @@ import (
 	"github.com/alaingilbert/ogame/pkg/wrapper"
 )
 
-func printFleets(fleet ogame.Fleet) {
-	fmt.Print(fleet.Ships.LargeCargo)
-	fmt.Print(" GT,  ")
-	fmt.Print(fleet.Ships.SmallCargo)
-	fmt.Print(" PT, ")
-	fmt.Print(fleet.Ships.Pathfinder)
-	fmt.Println(" Eclaireur")
-}
-
 func printStructFields(s interface{}) string {
 	val := reflect.ValueOf(s)
 	typ := reflect.TypeOf(s)

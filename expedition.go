@@ -118,8 +118,10 @@ func SetExpedition(planete ogame.EmpireCelestial, bot *wrapper.OGame, coord ogam
 	fmt.Println("preparation envoi de flotte ===========================================>")
 	slotDispo := slots.ExpTotal - slots.ExpInUse
 	shipsInfos := getFleetCompositionForExplo(sh, slotDispo, bot)
-
 	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System, Position: 16}
+	if planete.Coordinate.Galaxy > 4 || planete.Coordinate.System > 20 {
+		co = planete.Coordinate
+	}
 	//bot.SendFleet(planete.ID, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
 	_, err := bot.SendFleet(planete.ID, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
 	if err != nil {
