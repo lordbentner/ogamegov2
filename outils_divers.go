@@ -36,7 +36,11 @@ func changeSystemeExploration(content string) bool {
 		return true
 	}
 
-	if strings.Contains(content, "avons fêté") {
+	if strings.Contains(content, "avons fêté") || strings.Contains(content, "Si cela continue comme ca") {
+		return true
+	}
+
+	if strings.Contains(content, "Il serait peut être plus judicieux") {
 		return true
 	}
 

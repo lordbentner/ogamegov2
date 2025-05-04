@@ -40,7 +40,9 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	if att {
 		sendTelegramMessage(botToken, chatID, "ATTACK EN COURS!")
 	}
-	//slots, _ := bot.GetSlots()
+
+	//getMaxExpeDebris()
+
 	fleets, slots := bot.GetFleets()
 	fmt.Println("=====================Flottes=======================")
 	fmt.Printf("%s slots: ", time.Now().Format(time.RFC850))
@@ -62,7 +64,11 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	empire = append(empire, empireMoon...)
 
 	sort.Slice(empire, func(i int, j int) bool {
-		return empire[i].Ships.LargeCargo > empire[j].Ships.LargeCargo
+		cargoTotali := getCargoGT(bot)*empire[i].Ships.LargeCargo + getCargoPT(bot)*empire[i].Ships.SmallCargo
+		cargoTotali += getCargoPathFinder(bot) * empire[i].Ships.Pathfinder
+		cargoTotalj := getCargoGT(bot)*empire[j].Ships.LargeCargo + getCargoPT(bot)*empire[j].Ships.SmallCargo
+		cargoTotalj += getCargoPathFinder(bot) * empire[j].Ships.Pathfinder
+		return cargoTotali > cargoTotalj
 	})
 
 	expeMes := gestionMessagesExpe(bot)
