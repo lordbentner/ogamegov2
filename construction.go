@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"sort"
 	"time"
 
 	"github.com/alaingilbert/ogame/pkg/ogame"
@@ -141,54 +142,51 @@ func buildFormeVie(planete ogame.EmpireCelestial) {
 		boot.BuildBuilding(planete.ID, ogame.AntimatterCondenserID)
 	}
 
-	boot.BuildTechnology(planete.ID, resFastestLifeForm(planete, boot))
-	boot.BuildTechnology(planete.ID, resFastestLifeFormKaelesh(planete, boot))
-	boot.BuildTechnology(planete.ID, ogame.VolcanicBatteriesID)
-	boot.BuildBuilding(planete.ID, ogame.CargoHoldExpansionCivilianShipsID)
+	time.Sleep(2 * time.Second)
+	resFastestLifeForm(planete)
+	time.Sleep(2 * time.Second)
+	resFastestLifeFormKaelesh(planete)
+	time.Sleep(2 * time.Second)
 	boot.BuildTechnology(planete.ID, ogame.HighEnergyPumpSystemsID)
+	boot.BuildBuilding(planete.ID, ogame.CargoHoldExpansionCivilianShipsID)
+	boot.BuildTechnology(planete.ID, ogame.VolcanicBatteriesID)
 }
 
-func resFastestLifeForm(planete ogame.EmpireCelestial, bot *wrapper.OGame) ogame.ID {
-	fast := ogame.AutomatedTransportLinesID
-	a, _ := bot.TechnologyDetails(planete.ID, ogame.AutomatedTransportLinesID)
-	h, _ := bot.TechnologyDetails(planete.ID, ogame.HighPerformanceExtractorsID)
-	m, _ := bot.TechnologyDetails(planete.ID, ogame.MagmaPoweredProductionID)
-	e, _ := bot.TechnologyDetails(planete.ID, ogame.EnhancedProductionTechnologiesID)
-	s, _ := bot.TechnologyDetails(planete.ID, ogame.DepthSoundingID)
-	p, _ := bot.TechnologyDetails(planete.ID, ogame.PsychoharmoniserID)
-	t, _ := bot.TechnologyDetails(planete.ID, ogame.HardenedDiamondDrillHeadsID)
+func resFastestLifeForm(planete ogame.EmpireCelestial) {
+	a, _ := boot.TechnologyDetails(planete.ID, ogame.AutomatedTransportLinesID)
+	h, _ := boot.TechnologyDetails(planete.ID, ogame.HighPerformanceExtractorsID)
+	m, _ := boot.TechnologyDetails(planete.ID, ogame.MagmaPoweredProductionID)
+	e, _ := boot.TechnologyDetails(planete.ID, ogame.EnhancedProductionTechnologiesID)
+	s, _ := boot.TechnologyDetails(planete.ID, ogame.DepthSoundingID)
+	p, _ := boot.TechnologyDetails(planete.ID, ogame.PsychoharmoniserID)
+	t, _ := boot.TechnologyDetails(planete.ID, ogame.HardenedDiamondDrillHeadsID)
 	list := []ogame.TechnologyDetails{a, h, m, e, s, p, t}
-	min := int64(a.ProductionDuration.Seconds()) * (a.Level + 1)
+
+	sort.Slice(list, func(i int, j int) bool {
+		basecost := int64(list[i].ProductionDuration.Seconds()) * (list[i].Level + 1)
+		j_basecost := int64(list[j].ProductionDuration.Seconds()) * (list[j].Level + 1)
+		return basecost > j_basecost
+	})
 
 	for _, elem := range list {
-		basecost := int64(elem.ProductionDuration.Seconds()) * (elem.Level + 1)
-		if basecost < min {
-			min = basecost
-			fast = elem.TechnologyID
-		}
+		boot.BuildTechnology(planete.ID, elem.TechnologyID)
 	}
-
-	return fast
 }
 
-func resFastestLifeFormKaelesh(planete ogame.EmpireCelestial, bot *wrapper.OGame) ogame.ID {
-	fast := ogame.EnhancedSensorTechnologyID
-	a, _ := bot.TechnologyDetails(planete.ID, ogame.PsionicNetworkID)
-	h, _ := bot.TechnologyDetails(planete.ID, ogame.EnhancedSensorTechnologyID)
-	m, _ := bot.TechnologyDetails(planete.ID, ogame.TelekineticTractorBeamID)
-	//6/443/9
+func resFastestLifeFormKaelesh(planete ogame.EmpireCelestial) {
+	a, _ := boot.TechnologyDetails(planete.ID, ogame.PsionicNetworkID)
+	h, _ := boot.TechnologyDetails(planete.ID, ogame.EnhancedSensorTechnologyID)
+	m, _ := boot.TechnologyDetails(planete.ID, ogame.TelekineticTractorBeamID)
 	list := []ogame.TechnologyDetails{a, h, m}
-	min := int64(a.ProductionDuration.Seconds()) * (a.Level + 1)
+	sort.Slice(list, func(i int, j int) bool {
+		basecost := int64(list[i].ProductionDuration.Seconds()) * (list[i].Level + 1)
+		j_basecost := int64(list[j].ProductionDuration.Seconds()) * (list[j].Level + 1)
+		return basecost > j_basecost
+	})
 
 	for _, elem := range list {
-		basecost := int64(elem.ProductionDuration.Seconds()) * (elem.Level + 1)
-		if basecost < min {
-			min = basecost
-			fast = elem.TechnologyID
-		}
+		boot.BuildTechnology(planete.ID, elem.TechnologyID)
 	}
-
-	return fast
 }
 
 func buildMoon(moon ogame.EmpireCelestial, bot *wrapper.OGame) {

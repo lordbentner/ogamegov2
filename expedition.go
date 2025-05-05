@@ -75,7 +75,7 @@ func getFleetCompositionForExplo(sh ogame.ShipsInfos, slotDispo int64, bot *wrap
 		}
 	}
 
-	maxCargo := 100000000
+	maxCargo := 120000000
 	shipsInfos.LargeCargo = int64(maxCargo) / getCargoGT(bot)
 	if shipsInfos.LargeCargo > sh.LargeCargo {
 		shipsInfos.LargeCargo = sh.LargeCargo
@@ -119,7 +119,7 @@ func SetExpedition(planete ogame.EmpireCelestial, bot *wrapper.OGame, coord ogam
 	slotDispo := slots.ExpTotal - slots.ExpInUse
 	shipsInfos := getFleetCompositionForExplo(sh, slotDispo, bot)
 	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System, Position: 16}
-	if planete.Coordinate.Galaxy > 4 || planete.Coordinate.System > 20 {
+	if planete.Coordinate.Galaxy > 4 || planete.Coordinate.System > 12 {
 		co = planete.Coordinate
 	}
 	//bot.SendFleet(planete.ID, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
