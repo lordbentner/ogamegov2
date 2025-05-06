@@ -55,7 +55,7 @@ func buildFormeVieKaelesh(planete ogame.EmpireCelestial) {
 
 	boot.BuildBuilding(planete.ID, ogame.HallsOfRealisationID)
 	boot.BuildBuilding(planete.ID, ogame.ForumOfTranscendenceID)
-	if planete.LfBuildings.AntimatterConvector+3 < planete.LfBuildings.CloningLaboratory {
+	if planete.LfBuildings.AntimatterConvector < planete.LfBuildings.CloningLaboratory {
 		boot.BuildBuilding(planete.ID, ogame.AntimatterConvectorID)
 	} else {
 		boot.BuildBuilding(planete.ID, ogame.CloningLaboratoryID)
