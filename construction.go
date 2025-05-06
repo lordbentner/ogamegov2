@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"math"
-	"sort"
 	"time"
 
 	"github.com/alaingilbert/ogame/pkg/ogame"
@@ -17,35 +16,6 @@ func satProduction(planete ogame.EmpireCelestial) {
 	if cenprice > float64(satprod) {
 		boot.BuildShips(planete.ID, ogame.SolarSatelliteID, 1)
 	}
-}
-
-func getFastestResearch(planete ogame.EmpireCelestial) {
-	min, _ := boot.TechnologyDetails(planete.ID, ogame.EspionageTechnologyID)
-	min_duration := int64(min.ProductionDuration.Seconds()) * (min.Level + 1)
-	fmt.Println(min_duration)
-	for i := 107; i < 125; i++ {
-		id := ogame.ID(i)
-		if !id.IsValid() {
-			continue
-		}
-
-		if id == ogame.LaserTechnologyID || id == ogame.IonTechnologyID || id == ogame.EnergyTechnologyID {
-			continue
-		}
-
-		if id == ogame.EspionageTechnologyID && planete.Researches.EspionageTechnology > 7 {
-			continue
-		}
-
-		tech, _ := boot.TechnologyDetails(planete.ID, id)
-		tech_duration := int64(tech.ProductionDuration.Seconds()) * (tech.Level + 1)
-		if min_duration > tech_duration {
-			min = tech
-			min_duration = tech_duration
-		}
-	}
-
-	boot.BuildTechnology(planete.ID, min.TechnologyID)
 }
 
 func buildFormeVieHumans(planete ogame.EmpireCelestial) {
@@ -152,43 +122,6 @@ func buildFormeVie(planete ogame.EmpireCelestial) {
 	boot.BuildTechnology(planete.ID, ogame.VolcanicBatteriesID)
 }
 
-func resFastestLifeForm(planete ogame.EmpireCelestial) {
-	a, _ := boot.TechnologyDetails(planete.ID, ogame.AutomatedTransportLinesID)
-	h, _ := boot.TechnologyDetails(planete.ID, ogame.HighPerformanceExtractorsID)
-	m, _ := boot.TechnologyDetails(planete.ID, ogame.MagmaPoweredProductionID)
-	e, _ := boot.TechnologyDetails(planete.ID, ogame.EnhancedProductionTechnologiesID)
-	s, _ := boot.TechnologyDetails(planete.ID, ogame.DepthSoundingID)
-	p, _ := boot.TechnologyDetails(planete.ID, ogame.PsychoharmoniserID)
-	t, _ := boot.TechnologyDetails(planete.ID, ogame.HardenedDiamondDrillHeadsID)
-	list := []ogame.TechnologyDetails{a, h, m, e, s, p, t}
-
-	sort.Slice(list, func(i int, j int) bool {
-		basecost := int64(list[i].ProductionDuration.Seconds()) * (list[i].Level + 1)
-		j_basecost := int64(list[j].ProductionDuration.Seconds()) * (list[j].Level + 1)
-		return basecost > j_basecost
-	})
-
-	for _, elem := range list {
-		boot.BuildTechnology(planete.ID, elem.TechnologyID)
-	}
-}
-
-func resFastestLifeFormKaelesh(planete ogame.EmpireCelestial) {
-	a, _ := boot.TechnologyDetails(planete.ID, ogame.PsionicNetworkID)
-	h, _ := boot.TechnologyDetails(planete.ID, ogame.EnhancedSensorTechnologyID)
-	m, _ := boot.TechnologyDetails(planete.ID, ogame.TelekineticTractorBeamID)
-	list := []ogame.TechnologyDetails{a, h, m}
-	sort.Slice(list, func(i int, j int) bool {
-		basecost := int64(list[i].ProductionDuration.Seconds()) * (list[i].Level + 1)
-		j_basecost := int64(list[j].ProductionDuration.Seconds()) * (list[j].Level + 1)
-		return basecost > j_basecost
-	})
-
-	for _, elem := range list {
-		boot.BuildTechnology(planete.ID, elem.TechnologyID)
-	}
-}
-
 func buildMoon(moon ogame.EmpireCelestial, bot *wrapper.OGame) {
 	if moon.Facilities.JumpGate > 0 {
 		return
@@ -247,54 +180,4 @@ func buildResources(planete ogame.EmpireCelestial) {
 	if planete.Facilities.Shipyard < 12 {
 		boot.BuildBuilding(planete.ID, ogame.ShipyardID)
 	}
-}
-
-func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.Slots) {
-	res, _ := bot.GetResearch()
-	id := planete.ID
-
-	if res.EnergyTechnology < 12 {
-		bot.BuildTechnology(id, ogame.EnergyTechnologyID)
-	}
-
-	if res.ImpulseDrive < 5 {
-		bot.BuildTechnology(id, ogame.ImpulseDriveID)
-	}
-
-	if res.EspionageTechnology < 8 {
-		bot.BuildTechnology(id, ogame.EspionageTechnologyID)
-	}
-
-	bot.BuildTechnology(id, ogame.CombustionDriveID)
-	if res.ShieldingTechnology < 6 {
-		bot.BuildTechnology(id, ogame.ShieldingTechnologyID)
-	}
-
-	if res.HyperspaceTechnology < 8 {
-		bot.BuildTechnology(id, ogame.HyperspaceTechnologyID)
-	}
-
-	if res.EnergyTechnology < 5 {
-		bot.BuildTechnology(id, ogame.EnergyTechnologyID)
-	}
-
-	if slots.Total-slots.ExpTotal < 1 || res.ComputerTechnology < 10 {
-		bot.BuildTechnology(id, ogame.ComputerTechnologyID)
-	}
-
-	if res.LaserTechnology < 10 {
-		bot.BuildTechnology(id, ogame.LaserTechnologyID)
-	}
-
-	if res.IonTechnology < 5 {
-		bot.BuildTechnology(id, ogame.IonTechnologyID)
-	}
-
-	getFastestResearch(planete)
-
-	bot.BuildTechnology(id, ogame.PlasmaTechnologyID)
-	bot.BuildTechnology(id, ogame.WeaponsTechnologyID)
-	bot.BuildTechnology(id, ogame.ArmourTechnologyID)
-	bot.BuildTechnology(id, ogame.AstrophysicsID)
-	bot.BuildTechnology(id, ogame.IntergalacticResearchNetworkID)
 }
