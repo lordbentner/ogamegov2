@@ -73,7 +73,8 @@ func resFastestLifeForm(planete ogame.EmpireCelestial) {
 	s, _ := boot.TechnologyDetails(planete.ID, ogame.DepthSoundingID)
 	p, _ := boot.TechnologyDetails(planete.ID, ogame.PsychoharmoniserID)
 	t, _ := boot.TechnologyDetails(planete.ID, ogame.HardenedDiamondDrillHeadsID)
-	list := []ogame.TechnologyDetails{a, h, m, e, s, p, t}
+	i, _ := boot.TechnologyDetails(planete.ID, ogame.ArtificialSwarmIntelligenceID)
+	list := []ogame.TechnologyDetails{a, h, m, e, s, p, t, i}
 
 	sort.Slice(list, func(i int, j int) bool {
 		basecost := int64(list[i].ProductionDuration.Seconds()) * (list[i].Level + 1)

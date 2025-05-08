@@ -9,6 +9,7 @@ import (
 )
 
 var tentaTiveExplovie int = 0
+var maxCargo int = 120000000
 
 func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGame) int {
 	slots, _ := bot.GetSlots()
@@ -53,7 +54,7 @@ func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGam
 	return 0
 }
 
-func getFleetCompositionForExplo(sh ogame.ShipsInfos, slotDispo int64, bot *wrapper.OGame) ogame.ShipsInfos {
+func getFleetCompositionForExplo(sh ogame.ShipsInfos, bot *wrapper.OGame) ogame.ShipsInfos {
 	var shipsInfos ogame.ShipsInfos
 	if sh.EspionageProbe < 10 {
 		shipsInfos.EspionageProbe = sh.EspionageProbe
@@ -75,7 +76,6 @@ func getFleetCompositionForExplo(sh ogame.ShipsInfos, slotDispo int64, bot *wrap
 		}
 	}
 
-	maxCargo := 120000000
 	shipsInfos.LargeCargo = int64(maxCargo) / getCargoGT(bot)
 	if shipsInfos.LargeCargo > sh.LargeCargo {
 		shipsInfos.LargeCargo = sh.LargeCargo
@@ -108,16 +108,17 @@ func getFleetCompositionForExplo(sh ogame.ShipsInfos, slotDispo int64, bot *wrap
 func SetExpedition(planete ogame.EmpireCelestial, bot *wrapper.OGame, coord ogame.Coordinate) {
 	sh, _ := bot.GetShips(planete.ID)
 	slots, _ := bot.GetSlots()
-	if slots.ExpInUse >= slots.ExpTotal || planete.Ships.SmallCargo == 0 /*|| sh.EspionageProbe == 0 || sh.Pathfinder == 0*/ || slots.InUse >= slots.Total {
-		fmt.Println(slots)
-		fmt.Println(sh)
+	totalCargo := (sh.LargeCargo * getCargoGT(bot)) + (sh.SmallCargo * getCargoPT(bot)) + (sh.Pathfinder * getCargoPathFinder(bot))
+	if slots.ExpInUse >= slots.ExpTotal || totalCargo < int64(maxCargo) || slots.InUse >= slots.Total {
+		if totalCargo < int64(maxCargo) {
+			fmt.Printf("Pas assez de capacité ======================> %d\n", totalCargo)
+		}
 		fmt.Println("Pas d'envoie de flotte pour l'instant ======================>")
 		return
 	}
 
 	fmt.Println("preparation envoi de flotte ===========================================>")
-	slotDispo := slots.ExpTotal - slots.ExpInUse
-	shipsInfos := getFleetCompositionForExplo(sh, slotDispo, bot)
+	shipsInfos := getFleetCompositionForExplo(sh, bot)
 	co := ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System, Position: 16}
 	if planete.Coordinate.Galaxy > 4 || planete.Coordinate.System > 12 {
 		co = planete.Coordinate
@@ -130,7 +131,6 @@ func SetExpedition(planete ogame.EmpireCelestial, bot *wrapper.OGame, coord ogam
 	}
 	fmt.Printf("fleet send to expedition from %s with this fleet: ", coord.String())
 	printStructFields(shipsInfos)
-	printShipsInfos(shipsInfos)
 	time.Sleep(5000)
 }
 
