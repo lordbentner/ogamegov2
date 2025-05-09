@@ -119,7 +119,6 @@ func buildFormeVie(planete ogame.EmpireCelestial) {
 	time.Sleep(2 * time.Second)
 	boot.BuildTechnology(planete.ID, ogame.HighEnergyPumpSystemsID)
 	boot.BuildBuilding(planete.ID, ogame.CargoHoldExpansionCivilianShipsID)
-	boot.BuildTechnology(planete.ID, ogame.VolcanicBatteriesID)
 }
 
 func buildMoon(moon ogame.EmpireCelestial, bot *wrapper.OGame) {
