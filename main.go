@@ -39,7 +39,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		sendTelegramMessage(botToken, chatID, "ATTAQUE EN COURS!")
 	}
 
-	//getMaxExpeDebris(4)
+	//getMaxExpeDebris(6)
 
 	fleets, slots := bot.GetFleets()
 	fmt.Println("=====================Flottes=======================")
