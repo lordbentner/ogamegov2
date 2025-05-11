@@ -39,7 +39,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		sendTelegramMessage(botToken, chatID, "ATTAQUE EN COURS!")
 	}
 
-	//getMaxExpeDebris(6)
+	//getMaxExpeDebris(4)
 
 	fleets, slots := bot.GetFleets()
 	fmt.Println("=====================Flottes=======================")
@@ -170,6 +170,5 @@ func connect(bot *wrapper.OGame) bool {
 	time.Sleep(5000)
 	getFlottePourExpe(bot)
 	bot.Logout()
-	time.Sleep(1 * time.Second)
 	return connect(bot)
 }

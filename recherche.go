@@ -19,7 +19,7 @@ func getFastestResearch(planete ogame.EmpireCelestial) {
 			continue
 		}
 
-		if id == ogame.LaserTechnologyID || id == ogame.IonTechnologyID || id == ogame.EnergyTechnologyID {
+		if id == ogame.LaserTechnologyID || id == ogame.IonTechnologyID || id == ogame.EnergyTechnologyID || id == ogame.ImpulseDriveID {
 			continue
 		}
 
