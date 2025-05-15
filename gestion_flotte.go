@@ -6,10 +6,58 @@ import (
 	"sort"
 
 	"github.com/alaingilbert/ogame/pkg/ogame"
-	"github.com/alaingilbert/ogame/pkg/wrapper"
 )
 
-func setGhostFleet(bot *wrapper.OGame) {
+func sendFleetFromMoonToPlanet(moon ogame.EmpireCelestial) {
+	if moon.Resources.Metal <= 0 && moon.Resources.Crystal <= 0 {
+		return
+	}
+	r := moon.Resources
+	var sh ogame.ShipsInfos
+	sh.LargeCargo = moon.Ships.LargeCargo
+	sh.SmallCargo = moon.Ships.SmallCargo
+	sh.Pathfinder = moon.Ships.Pathfinder
+	if r.Deuterium > 1500000 {
+		r.Deuterium -= 1500000
+	} else {
+		r.Deuterium = 0
+	}
+
+	resources := ogame.Resources{Metal: r.Metal, Crystal: r.Crystal, Deuterium: r.Deuterium}
+	totalRes := resources.Metal + resources.Crystal + resources.Deuterium
+	if sh.LargeCargo*getCargoGT()+sh.SmallCargo*getCargoPT()+sh.Pathfinder*getCargoPathFinder() > totalRes {
+		_, err := boot.SendFleet(moon.ID, sh, 100, moon.Coordinate.Planet(), ogame.Transport, r, 0, 0)
+		if err != nil {
+			fmt.Printf("err sendFleetFromMoonToPlanet : %s\n", err)
+		}
+		return
+	}
+
+	if r.Crystal > sh.LargeCargo*getCargoGT() {
+		resources.Crystal = sh.LargeCargo * getCargoGT()
+	}
+
+	if r.Metal > sh.SmallCargo*getCargoPT() {
+		resources.Metal = sh.SmallCargo * getCargoPT()
+	}
+
+	if r.Deuterium > sh.Pathfinder*getCargoPathFinder() {
+		resources.Deuterium = sh.Pathfinder * getCargoPathFinder()
+	}
+
+	_, err := boot.SendFleet(moon.ID, sh, 100, moon.Coordinate.Planet(), ogame.Transport, resources, 0, 0)
+	if err != nil {
+		fmt.Printf("err sendFleetFromMoonToPlanet : %s\n", err)
+	}
+
+	/*sh := moon.Ships
+	if sh.LargeCargo > resources.Metal/getCargoGT() {
+		sh.LargeCargo = resources.Metal / getCargoGT()
+	} else if sh.SmallCargo > (resources.Metal-sh.LargeCargo*getCargoGT())/getCargoPT() {
+		sh.SmallCargo = (resources.Metal - sh.LargeCargo*getCargoGT()) / getCargoPT()
+	} else if  sh.Pathfinder*/
+
+	//boot.SendFleet(moon.ID)
 
 }
 

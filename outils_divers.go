@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/alaingilbert/ogame/pkg/ogame"
-	"github.com/alaingilbert/ogame/pkg/wrapper"
 )
 
 func getCorrectCoord(coord ogame.Coordinate) ogame.Coordinate {
@@ -57,20 +56,20 @@ func convertSecToTime(seconds int64) string {
 	return fmt.Sprintf("%02d:%02d:%02d\n", hours, minutes, secs)
 }
 
-func getCargoGT(bot *wrapper.OGame) int64 {
-	lfBonuses, _ := bot.GetCachedLfBonuses()
-	multiplier := float64(bot.GetServerData().CargoHyperspaceTechMultiplier) / 100.0
-	return ogame.LargeCargo.GetCargoCapacity(bot.GetCachedResearch(), lfBonuses, bot.CharacterClass(), multiplier, bot.GetServer().ProbeRaidsEnabled())
+func getCargoGT() int64 {
+	lfBonuses, _ := boot.GetCachedLfBonuses()
+	multiplier := float64(boot.GetServerData().CargoHyperspaceTechMultiplier) / 100.0
+	return ogame.LargeCargo.GetCargoCapacity(boot.GetCachedResearch(), lfBonuses, boot.CharacterClass(), multiplier, boot.GetServer().ProbeRaidsEnabled())
 }
 
-func getCargoPT(bot *wrapper.OGame) int64 {
-	lfBonuses, _ := bot.GetCachedLfBonuses()
-	multiplier := float64(bot.GetServerData().CargoHyperspaceTechMultiplier) / 100.0
-	return ogame.SmallCargo.GetCargoCapacity(bot.GetCachedResearch(), lfBonuses, bot.CharacterClass(), multiplier, bot.GetServer().ProbeRaidsEnabled())
+func getCargoPT() int64 {
+	lfBonuses, _ := boot.GetCachedLfBonuses()
+	multiplier := float64(boot.GetServerData().CargoHyperspaceTechMultiplier) / 100.0
+	return ogame.SmallCargo.GetCargoCapacity(boot.GetCachedResearch(), lfBonuses, boot.CharacterClass(), multiplier, boot.GetServer().ProbeRaidsEnabled())
 }
 
-func getCargoPathFinder(bot *wrapper.OGame) int64 {
-	lfBonuses, _ := bot.GetCachedLfBonuses()
-	multiplier := float64(bot.GetServerData().CargoHyperspaceTechMultiplier) / 100.0
-	return ogame.Pathfinder.GetCargoCapacity(bot.GetCachedResearch(), lfBonuses, bot.CharacterClass(), multiplier, bot.GetServer().ProbeRaidsEnabled())
+func getCargoPathFinder() int64 {
+	lfBonuses, _ := boot.GetCachedLfBonuses()
+	multiplier := float64(boot.GetServerData().CargoHyperspaceTechMultiplier) / 100.0
+	return ogame.Pathfinder.GetCargoCapacity(boot.GetCachedResearch(), lfBonuses, boot.CharacterClass(), multiplier, boot.GetServer().ProbeRaidsEnabled())
 }

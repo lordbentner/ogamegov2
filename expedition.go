@@ -76,14 +76,14 @@ func getFleetCompositionForExplo(sh ogame.ShipsInfos, bot *wrapper.OGame) ogame.
 		}
 	}
 
-	shipsInfos.LargeCargo = int64(maxCargo) / getCargoGT(bot)
+	shipsInfos.LargeCargo = int64(maxCargo) / getCargoGT()
 	if shipsInfos.LargeCargo > sh.LargeCargo {
 		shipsInfos.LargeCargo = sh.LargeCargo
-		shipsInfos.SmallCargo = (int64(maxCargo) - shipsInfos.LargeCargo*getCargoGT(bot)) / getCargoPT(bot)
+		shipsInfos.SmallCargo = (int64(maxCargo) - shipsInfos.LargeCargo*getCargoGT()) / getCargoPT()
 		if shipsInfos.SmallCargo > sh.SmallCargo {
 			shipsInfos.SmallCargo = sh.SmallCargo
-			cap_gt := int64(maxCargo) - shipsInfos.LargeCargo*getCargoGT(bot)
-			shipsInfos.Pathfinder = (cap_gt - shipsInfos.SmallCargo*getCargoPT(bot)) / getCargoPathFinder(bot)
+			cap_gt := int64(maxCargo) - shipsInfos.LargeCargo*getCargoGT()
+			shipsInfos.Pathfinder = (cap_gt - shipsInfos.SmallCargo*getCargoPT()) / getCargoPathFinder()
 			if shipsInfos.Pathfinder > sh.Pathfinder {
 				shipsInfos.Pathfinder = sh.Pathfinder
 			}
@@ -108,7 +108,7 @@ func getFleetCompositionForExplo(sh ogame.ShipsInfos, bot *wrapper.OGame) ogame.
 func SetExpedition(planete ogame.EmpireCelestial, bot *wrapper.OGame, coord ogame.Coordinate) {
 	sh, _ := bot.GetShips(planete.ID)
 	slots, _ := bot.GetSlots()
-	totalCargo := (sh.LargeCargo * getCargoGT(bot)) + (sh.SmallCargo * getCargoPT(bot)) + (sh.Pathfinder * getCargoPathFinder(bot))
+	totalCargo := (sh.LargeCargo * getCargoGT()) + (sh.SmallCargo * getCargoPT()) + (sh.Pathfinder * getCargoPathFinder())
 	if slots.ExpInUse >= slots.ExpTotal || totalCargo < int64(maxCargo) || slots.InUse >= slots.Total {
 		if totalCargo < int64(maxCargo) {
 			fmt.Printf("Pas assez de capacité ======================> %d\n", totalCargo)

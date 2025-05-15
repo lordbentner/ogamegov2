@@ -40,6 +40,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	}
 
 	//getMaxExpeDebris(4)
+	//getMaxExpeDebris(5)
 
 	fleets, slots := bot.GetFleets()
 	fmt.Println("=====================Flottes=======================")
@@ -62,10 +63,10 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	empire = append(empire, empireMoon...)
 
 	sort.Slice(empire, func(i int, j int) bool {
-		cargoTotali := getCargoGT(bot)*empire[i].Ships.LargeCargo + getCargoPT(bot)*empire[i].Ships.SmallCargo
-		cargoTotali += getCargoPathFinder(bot) * empire[i].Ships.Pathfinder
-		cargoTotalj := getCargoGT(bot)*empire[j].Ships.LargeCargo + getCargoPT(bot)*empire[j].Ships.SmallCargo
-		cargoTotalj += getCargoPathFinder(bot) * empire[j].Ships.Pathfinder
+		cargoTotali := getCargoGT()*empire[i].Ships.LargeCargo + getCargoPT()*empire[i].Ships.SmallCargo
+		cargoTotali += getCargoPathFinder() * empire[i].Ships.Pathfinder
+		cargoTotalj := getCargoGT()*empire[j].Ships.LargeCargo + getCargoPT()*empire[j].Ships.SmallCargo
+		cargoTotalj += getCargoPathFinder() * empire[j].Ships.Pathfinder
 		return cargoTotali > cargoTotalj
 	})
 
@@ -83,19 +84,18 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	}
 
 	fmt.Println("================================================================")
-
-	//planetLife := empire[0]
-	//lablvl12completed := true
 	Researches(first_planet, bot, slots)
 	for _, planete := range empire {
 		fmt.Printf("======================= planete %s(%s) =========================\n", planete.Name, planete.Coordinate)
 		if planete.Facilities.ResearchLab < 12 {
 			bot.BuildBuilding(planete.ID, ogame.ResearchLabID)
-			//	lablvl12completed = false
 		}
 
 		if planete.Type == ogame.MoonType {
 			buildMoon(planete, bot)
+			if slots.ExpInUse >= slots.ExpTotal && slots.InUse < slots.Total {
+				sendFleetFromMoonToPlanet(planete)
+			}
 		} else if planete.Fields.Built < planete.Fields.Total-2 {
 			buildResources(planete)
 		} else {
