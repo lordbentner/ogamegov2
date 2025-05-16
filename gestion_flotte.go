@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"sort"
 
 	"github.com/alaingilbert/ogame/pkg/ogame"
@@ -49,16 +48,6 @@ func sendFleetFromMoonToPlanet(moon ogame.EmpireCelestial) {
 	if err != nil {
 		fmt.Printf("err sendFleetFromMoonToPlanet : %s\n", err)
 	}
-
-	/*sh := moon.Ships
-	if sh.LargeCargo > resources.Metal/getCargoGT() {
-		sh.LargeCargo = resources.Metal / getCargoGT()
-	} else if sh.SmallCargo > (resources.Metal-sh.LargeCargo*getCargoGT())/getCargoPT() {
-		sh.SmallCargo = (resources.Metal - sh.LargeCargo*getCargoGT()) / getCargoPT()
-	} else if  sh.Pathfinder*/
-
-	//boot.SendFleet(moon.ID)
-
 }
 
 func getMaxExpeDebris(g int) {
@@ -92,5 +81,4 @@ func getMaxExpeDebris(g int) {
 	for i := 0; i < 8; i++ {
 		fmt.Println(list[i])
 	}
-	os.Exit(0)
 }
