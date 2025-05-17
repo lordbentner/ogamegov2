@@ -33,6 +33,8 @@ func sendTelegramMessage(token, chatID, message string) {
 	fmt.Println("✅ Message envoyé avec succès.")
 }
 
+var nbFullExplo = 0
+
 func getFlottePourExpe(bot *wrapper.OGame) {
 	att, _ := bot.IsUnderAttack()
 	if att {
