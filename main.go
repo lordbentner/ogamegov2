@@ -33,8 +33,6 @@ func sendTelegramMessage(token, chatID, message string) {
 	fmt.Println("✅ Message envoyé avec succès.")
 }
 
-var nbFullExplo = 0
-
 func getFlottePourExpe(bot *wrapper.OGame) {
 	att, _ := bot.IsUnderAttack()
 	if att {
@@ -89,6 +87,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 
 	fmt.Println("================================================================")
 	Researches(first_planet, bot, slots)
+	//HasMoonRes := false
 	for _, planete := range empire {
 		fmt.Printf("======================= planete %s(%s) =========================\n", planete.Name, planete.Coordinate)
 		if planete.Facilities.ResearchLab < 12 {
@@ -98,7 +97,9 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		if planete.Type == ogame.MoonType {
 			buildMoon(planete, bot)
 			if slots.ExpInUse >= slots.ExpTotal && slots.InUse < slots.Total {
-				sendFleetFromMoonToPlanet(planete)
+				if sendFleetFromMoonToPlanet(planete) {
+					//HasMoonRes = true
+				}
 			}
 		} else if planete.Fields.Built < planete.Fields.Total-2 {
 			buildResources(planete)
@@ -111,6 +112,9 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		printCurrentconstruction(planete.ID, bot)
 	}
 
+	/*if slots.ExpInUse >= slots.ExpTotal && slots.InUse < slots.Total && !HasMoonRes {
+		setExploVie(planetLife.ID, planetLife.Coordinate, bot)
+	}*/
 	//setExploVie(planetLife.ID, planetLife.Coordinate, bot)
 }
 

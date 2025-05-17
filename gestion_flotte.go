@@ -7,9 +7,9 @@ import (
 	"github.com/alaingilbert/ogame/pkg/ogame"
 )
 
-func sendFleetFromMoonToPlanet(moon ogame.EmpireCelestial) {
-	if moon.Resources.Metal <= 0 && moon.Resources.Crystal <= 0 {
-		return
+func sendFleetFromMoonToPlanet(moon ogame.EmpireCelestial) bool {
+	if moon.Resources.Metal <= 0 && moon.Resources.Crystal <= 0 && moon.Resources.Deuterium < 1500000 {
+		return false
 	}
 	r := moon.Resources
 	var sh ogame.ShipsInfos
@@ -29,7 +29,7 @@ func sendFleetFromMoonToPlanet(moon ogame.EmpireCelestial) {
 		if err != nil {
 			fmt.Printf("err sendFleetFromMoonToPlanet : %s\n", err)
 		}
-		return
+		return true
 	}
 
 	if r.Crystal > sh.LargeCargo*getCargoGT() {
@@ -48,6 +48,8 @@ func sendFleetFromMoonToPlanet(moon ogame.EmpireCelestial) {
 	if err != nil {
 		fmt.Printf("err sendFleetFromMoonToPlanet : %s\n", err)
 	}
+
+	return true
 }
 
 func getMaxExpeDebris(g int) {
