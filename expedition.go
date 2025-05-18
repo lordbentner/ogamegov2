@@ -12,43 +12,26 @@ var tentaTiveExplovie int = 0
 var maxCargo int = 120000000
 
 func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGame) int {
-	slots, _ := bot.GetSlots()
 	fmt.Println("Gestion exploration forme de vie")
-	if slots.InUse >= slots.Total || slots.ExpInUse < slots.ExpTotal {
-		fmt.Println("Exploration impossible car pas de slots disponible")
-		return 0
-	}
-	att, _ := bot.IsUnderAttack()
-	slotsDispo := int64(slots.Total - slots.InUse)
 	nbError := 0
-	co := coord
-	if !att {
-		for i := coord.Position; i < slotsDispo+int64(coord.Position); i++ {
-			pos := int64(i + 1)
-			gal := coord.Galaxy
-			sys := coord.System
-
-			co = getCorrectCoord(ogame.Coordinate{Galaxy: gal, System: sys, Position: pos})
-
-			err := bot.SendDiscoveryFleet(id, co)
-			if err != nil {
-				nbError++
-				fmt.Printf("%s: Erreur d'envoie explo vie : %s", co, err)
-			} else {
-				fmt.Printf("fleet send to life discovery from %s to %s\n", coord.String(), co)
-			}
-		}
+	err := bot.SendDiscoveryFleet(id, coord)
+	if err != nil {
+		nbError++
+		fmt.Printf("%s: Erreur d'envoie explo vie : %s", coord, err)
+	} else {
+		fmt.Printf("fleet send to life discovery from %s to %s\n", coord.String(), coord)
 	}
 
 	if nbError > 0 {
 		fmt.Printf("%d erreurs d'envoie d'explo vie détectés\n", nbError)
 		tentaTiveExplovie++
-		time.Sleep(5 * time.Second)
-		if tentaTiveExplovie < 10 {
-			return setExploVie(id, co, bot)
-		} else {
+		time.Sleep(1 * time.Second)
+		//if tentaTiveExplovie < 10 {
+		co := getCorrectCoord(ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System, Position: coord.Position + 1})
+		return setExploVie(id, co, bot)
+		/*} else {
 			tentaTiveExplovie = 0
-		}
+		}*/
 	}
 
 	return 0
@@ -111,10 +94,11 @@ func SetExpedition(planete ogame.EmpireCelestial, bot *wrapper.OGame, coord ogam
 	totalCargo := (sh.LargeCargo * getCargoGT()) + (sh.SmallCargo * getCargoPT()) + (sh.Pathfinder * getCargoPathFinder())
 	if slots.ExpInUse >= slots.ExpTotal || totalCargo < int64(maxCargo) || slots.InUse >= slots.Total {
 		if totalCargo < int64(maxCargo) {
-			fmt.Printf("Pas assez de capacité ======================> %d\n", totalCargo)
+			fmt.Printf("Flotte non envoyée : Pas assez de capacité ======================> %d\n", totalCargo)
+			return false
 		}
 		fmt.Println("Pas d'envoie de flotte pour l'instant ======================>")
-		return false
+		return true
 	}
 
 	fmt.Println("preparation envoi de flotte ===========================================>")

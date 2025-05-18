@@ -7,6 +7,18 @@ import (
 	"github.com/alaingilbert/ogame/pkg/ogame"
 )
 
+func sliceEmpireCargo(empire []ogame.EmpireCelestial) []ogame.EmpireCelestial {
+	sort.Slice(empire, func(i int, j int) bool {
+		cargoTotali := getCargoGT()*empire[i].Ships.LargeCargo + getCargoPT()*empire[i].Ships.SmallCargo
+		cargoTotali += getCargoPathFinder() * empire[i].Ships.Pathfinder
+		cargoTotalj := getCargoGT()*empire[j].Ships.LargeCargo + getCargoPT()*empire[j].Ships.SmallCargo
+		cargoTotalj += getCargoPathFinder() * empire[j].Ships.Pathfinder
+		return cargoTotali > cargoTotalj
+	})
+
+	return empire
+}
+
 func sendFleetFromMoonToPlanet(moon ogame.EmpireCelestial) bool {
 	if moon.Resources.Metal <= 0 && moon.Resources.Crystal <= 0 && moon.Resources.Deuterium < 1500000 {
 		return false

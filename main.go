@@ -44,6 +44,8 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	getMaxExpeDebris(6)
 	os.Exit(0)*/
 
+	CargoExpeInsuffisant := 0
+
 	fleets, slots := bot.GetFleets()
 	fmt.Println("=====================Flottes=======================")
 	fmt.Printf("%s slots: ", time.Now().Format(time.RFC850))
@@ -64,13 +66,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	empireMoon, _ := bot.GetEmpire(ogame.MoonType)
 	empire = append(empire, empireMoon...)
 
-	sort.Slice(empire, func(i int, j int) bool {
-		cargoTotali := getCargoGT()*empire[i].Ships.LargeCargo + getCargoPT()*empire[i].Ships.SmallCargo
-		cargoTotali += getCargoPathFinder() * empire[i].Ships.Pathfinder
-		cargoTotalj := getCargoGT()*empire[j].Ships.LargeCargo + getCargoPT()*empire[j].Ships.SmallCargo
-		cargoTotalj += getCargoPathFinder() * empire[j].Ships.Pathfinder
-		return cargoTotali > cargoTotalj
-	})
+	empire = sliceEmpireCargo(empire)
 
 	expeMes := gestionMessagesExpe(bot)
 	coordExpe := expeMes.Coordinate
@@ -87,7 +83,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 
 	fmt.Println("================================================================")
 	Researches(first_planet, bot, slots)
-	//HasMoonRes := false
+	HasMoonRes := false
 	for _, planete := range empire {
 		fmt.Printf("======================= planete %s(%s) =========================\n", planete.Name, planete.Coordinate)
 		if planete.Facilities.ResearchLab < 12 {
@@ -98,7 +94,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 			buildMoon(planete, bot)
 			if slots.ExpInUse >= slots.ExpTotal && slots.InUse < slots.Total {
 				if sendFleetFromMoonToPlanet(planete) {
-					//HasMoonRes = true
+					HasMoonRes = true
 				}
 			}
 		} else if planete.Fields.Built < planete.Fields.Total-2 {
@@ -108,14 +104,50 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		}
 
 		buildFormeVie(planete)
-		SetExpedition(planete, bot, coordExpe)
+		if !SetExpedition(planete, bot, coordExpe) {
+			CargoExpeInsuffisant++
+		}
 		printCurrentconstruction(planete.ID, bot)
 	}
 
-	/*if slots.ExpInUse >= slots.ExpTotal && slots.InUse < slots.Total && !HasMoonRes {
-		setExploVie(planetLife.ID, planetLife.Coordinate, bot)
-	}*/
-	//setExploVie(planetLife.ID, planetLife.Coordinate, bot)
+	if slots.ExpInUse >= slots.ExpTotal && slots.InUse < slots.Total && CargoExpeInsuffisant > int(slots.ExpTotal) {
+		empire = sliceEmpireCargo(empire)
+
+		for _, planete := range empire {
+			var shipsInfos ogame.ShipsInfos
+			shipsInfos.LargeCargo = planete.Ships.LargeCargo
+			shipsInfos.SmallCargo = planete.Ships.SmallCargo
+			if planete.Ships.Pathfinder > 0 {
+				shipsInfos.Pathfinder = 1
+			}
+			if planete.Ships.EspionageProbe >= 10 {
+				shipsInfos.EspionageProbe = 10
+			} else {
+				shipsInfos.EspionageProbe = planete.Ships.EspionageProbe
+			}
+
+			co := planete.Coordinate
+			co.Position = 16
+			_, err := bot.SendFleet(planete.ID, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
+			if err != nil {
+				fmt.Println("Erreur envoie expe restant ")
+			}
+
+			time.Sleep(4 * time.Second)
+		}
+
+		CargoExpeInsuffisant = 0
+	}
+
+	if slots.ExpInUse >= slots.ExpTotal && slots.InUse < slots.Total && !HasMoonRes {
+		sort.Slice(empire, func(i int, j int) bool {
+			resources_i := empire[i].Resources.Metal + empire[i].Resources.Crystal + empire[i].Resources.Deuterium
+			resources_j := empire[j].Resources.Metal + empire[j].Resources.Crystal + empire[j].Resources.Deuterium
+			HasValidForExplo := empire[i].Resources.Metal > 5000 && empire[i].Resources.Crystal > 5000 && empire[i].Resources.Deuterium > 5000
+			return resources_i > resources_j && HasValidForExplo
+		})
+		setExploVie(empire[0].ID, empire[0].Coordinate, bot)
+	}
 }
 
 func main() {
