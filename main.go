@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"os"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/alaingilbert/ogame/pkg/device"
@@ -110,9 +111,9 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		printCurrentconstruction(planete.ID, bot)
 	}
 
-	if slots.ExpInUse >= slots.ExpTotal && slots.InUse < slots.Total && CargoExpeInsuffisant > int(slots.ExpTotal) {
+	_, slots = bot.GetFleets()
+	if slots.ExpInUse < slots.ExpTotal && slots.InUse < slots.Total {
 		empire = sliceEmpireCargo(empire)
-
 		for _, planete := range empire {
 			var shipsInfos ogame.ShipsInfos
 			shipsInfos.LargeCargo = planete.Ships.LargeCargo
@@ -130,7 +131,12 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 			co.Position = 16
 			_, err := bot.SendFleet(planete.ID, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
 			if err != nil {
-				fmt.Println("Erreur envoie expe restant ")
+				fmt.Printf("Erreur envoie expe restant : %s\n", err)
+				if strings.Contains(err.Error(), "all slots are in use") {
+					break
+				}
+			} else {
+
 			}
 
 			time.Sleep(4 * time.Second)

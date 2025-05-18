@@ -20,6 +20,9 @@ func sliceEmpireCargo(empire []ogame.EmpireCelestial) []ogame.EmpireCelestial {
 }
 
 func sendFleetFromMoonToPlanet(moon ogame.EmpireCelestial) bool {
+	if moon.Ships.LargeCargo <= 10 && moon.Ships.SmallCargo <= 50 {
+		return false
+	}
 	if moon.Resources.Metal <= 0 && moon.Resources.Crystal <= 0 && moon.Resources.Deuterium < 1500000 {
 		return false
 	}

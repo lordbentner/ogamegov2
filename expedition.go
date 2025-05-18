@@ -8,8 +8,8 @@ import (
 	"github.com/alaingilbert/ogame/pkg/wrapper"
 )
 
-var tentaTiveExplovie int = 0
 var maxCargo int = 120000000
+var validCoordLF ogame.Coordinate = ogame.Coordinate{Galaxy: 0, System: 0, Position: 0}
 
 func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGame) int {
 	fmt.Println("Gestion exploration forme de vie")
@@ -20,11 +20,11 @@ func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGam
 		fmt.Printf("%s: Erreur d'envoie explo vie : %s", coord, err)
 	} else {
 		fmt.Printf("fleet send to life discovery from %s to %s\n", coord.String(), coord)
+		validCoordLF = getCorrectCoord(validCoordLF)
 	}
 
 	if nbError > 0 {
 		fmt.Printf("%d erreurs d'envoie d'explo vie détectés\n", nbError)
-		tentaTiveExplovie++
 		time.Sleep(1 * time.Second)
 		//if tentaTiveExplovie < 10 {
 		co := getCorrectCoord(ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System, Position: coord.Position + 1})
