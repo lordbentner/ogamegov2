@@ -104,7 +104,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 			bot.BuildBuilding(planete.ID, ogame.TerraformerID)
 		}
 
-		buildFormeVie(planete)
+		//buildFormeVie(planete)
 		if !SetExpedition(planete, bot, coordExpe) {
 			CargoExpeInsuffisant++
 		}

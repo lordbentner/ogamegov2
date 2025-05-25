@@ -132,6 +132,11 @@ func gestionMessagesExpe(bot *wrapper.OGame) ogame.ExpeditionMessage {
 		}
 	}
 
+	if expMes == nil || len(expMes) == 0 {
+		var ff ogame.ExpeditionMessage
+		return ff
+	}
+
 	fmt.Println(expMes[0].Content)
 	return expMes[0]
 }

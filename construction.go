@@ -40,19 +40,6 @@ func buildFormeVieRocktas(planete ogame.EmpireCelestial) {
 }
 
 func buildFormeVieKaelesh(planete ogame.EmpireCelestial) {
-	/*	Sanctuary                  int64 // 14101 // Lifeform (kaelesh)
-		AntimatterCondenser        int64 // 14102
-		VortexChamber              int64 // 14103
-		HallsOfRealisation         int64 // 14104
-		ForumOfTranscendence       int64 // 14105
-		AntimatterConvector        int64 // 14106
-		CloningLaboratory          int64 // 14107
-		ChrysalisAccelerator       int64 // 14108
-		BioModifier                int64 // 14109
-		PsionicModulator           int64 // 14110
-		ShipManufacturingHall      int64 // 14111
-		SupraRefractor             int64 // 14112*/
-
 	if planete.LfBuildings.BioModifier < 5 {
 		boot.BuildBuilding(planete.ID, ogame.BioModifierID)
 	}
