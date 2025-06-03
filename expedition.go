@@ -56,6 +56,8 @@ func getFleetCompositionForExplo(sh ogame.ShipsInfos) ogame.ShipsInfos {
 			shipsInfos.Cruiser = 1
 		} else if sh.HeavyFighter > 0 {
 			shipsInfos.HeavyFighter = 1
+		} else if sh.LightFighter > 0 {
+			shipsInfos.LightFighter = 1
 		}
 	}
 

@@ -46,6 +46,19 @@ func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.S
 	res, _ := bot.GetResearch()
 	id := planete.ID
 
+	if res.Astrophysics == 0 && res.EspionageTechnology < 4 && res.ImpulseDrive < 3 {
+		if res.EspionageTechnology < 4 {
+			bot.BuildTechnology(id, ogame.EspionageTechnologyID)
+		}
+
+		if res.ImpulseDrive < 3 {
+			bot.BuildTechnology(id, ogame.ImpulseDriveID)
+		}
+
+		return
+	}
+
+	bot.BuildTechnology(id, ogame.AstrophysicsID)
 	if res.ImpulseDrive < 3 {
 		bot.BuildTechnology(id, ogame.ImpulseDriveID)
 	}

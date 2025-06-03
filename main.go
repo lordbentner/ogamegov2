@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"sort"
 	"strings"
 	"time"
 
@@ -66,9 +65,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 
 	empireMoon, _ := bot.GetEmpire(ogame.MoonType)
 	empire = append(empire, empireMoon...)
-
 	empire = sliceEmpireCargo(empire)
-
 	expeMes := gestionMessagesExpe(bot)
 	coordExpe := expeMes.Coordinate
 	fmt.Println(coordExpe)
@@ -83,25 +80,25 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	}
 
 	fmt.Println("================================================================")
-	Researches(first_planet, bot, slots)
-	HasMoonRes := false
-	for _, planete := range empire {
+	//HasMoonRes := false
+	for i, planete := range empire {
 		fmt.Printf("======================= planete %s(%s) =========================\n", planete.Name, planete.Coordinate)
-		if planete.Facilities.ResearchLab < 12 {
-			bot.BuildBuilding(planete.ID, ogame.ResearchLabID)
-		}
 
 		if planete.Type == ogame.MoonType {
 			buildMoon(planete, bot)
 			if slots.ExpInUse >= slots.ExpTotal && slots.InUse < slots.Total {
-				if sendFleetFromMoonToPlanet(planete) {
+				/*if sendFleetFromMoonToPlanet(planete) {
 					HasMoonRes = true
-				}
+				}*/
 			}
 		} else if planete.Fields.Built < planete.Fields.Total-2 {
 			buildResources(planete)
 		} else {
 			bot.BuildBuilding(planete.ID, ogame.TerraformerID)
+		}
+
+		if planete.Facilities.ResearchLab < 12 && i == 0 {
+			bot.BuildBuilding(planete.ID, ogame.ResearchLabID)
 		}
 
 		//buildFormeVie(planete)
@@ -110,6 +107,8 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		}
 		printCurrentconstruction(planete.ID, bot)
 	}
+
+	Researches(first_planet, bot, slots)
 
 	_, slots = bot.GetFleets()
 	if slots.ExpInUse < slots.ExpTotal && slots.InUse < slots.Total {
@@ -145,7 +144,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		CargoExpeInsuffisant = 0
 	}
 
-	if slots.ExpInUse >= slots.ExpTotal && slots.InUse < slots.Total && !HasMoonRes {
+	/*if slots.ExpInUse >= slots.ExpTotal && slots.InUse < slots.Total && !HasMoonRes {
 		sort.Slice(empire, func(i int, j int) bool {
 			resources_i := empire[i].Resources.Metal + empire[i].Resources.Crystal + empire[i].Resources.Deuterium
 			resources_j := empire[j].Resources.Metal + empire[j].Resources.Crystal + empire[j].Resources.Deuterium
@@ -153,7 +152,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 			return resources_i > resources_j && HasValidForExplo
 		})
 		setExploVie(empire[0].ID, empire[0].Coordinate, bot)
-	}
+	}*/
 }
 
 func main() {
@@ -163,10 +162,8 @@ func main() {
 	language := os.Getenv("LANGUAGE")
 	botToken = os.Getenv("BOTTOKEN")
 	chatID = os.Getenv("CHATID") // Exemple : "123456789"
-	startDate := time.Now()
-	fmt.Println(startDate)
-	fmt.Println(startDate.Add(5 * time.Minute))
 	fmt.Printf("Paramètres utilisateur récupéré => univers: %s username: %s mdp:%s language: %s\n", universe, username, password, language)
+	universe = "Quasi-Stellar"
 
 	deviceName := "DEVICE-NAME"
 	deviceInst, err := device.NewBuilder(deviceName).
