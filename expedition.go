@@ -9,29 +9,30 @@ import (
 )
 
 var maxCargo int = 120000000
-var validCoordLF ogame.Coordinate = ogame.Coordinate{Galaxy: 0, System: 0, Position: 0}
+var validCoordLF ogame.Coordinate = ogame.Coordinate{Galaxy: 5, System: 1, Position: 1}
 
 func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGame) int {
 	fmt.Println("Gestion exploration forme de vie")
 	nbError := 0
+	if validCoordLF.Galaxy != 0 {
+		coord = validCoordLF
+	}
 	err := bot.SendDiscoveryFleet(id, coord)
 	if err != nil {
 		nbError++
 		fmt.Printf("%s: Erreur d'envoie explo vie : %s", coord, err)
 	} else {
 		fmt.Printf("fleet send to life discovery from %s to %s\n", coord.String(), coord)
+		coord.Position = coord.Position + 1
 		validCoordLF = getCorrectCoord(validCoordLF)
 	}
 
 	if nbError > 0 {
 		fmt.Printf("%d erreurs d'envoie d'explo vie détectés\n", nbError)
 		time.Sleep(1 * time.Second)
-		//if tentaTiveExplovie < 10 {
-		co := getCorrectCoord(ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System, Position: coord.Position + 1})
-		return setExploVie(id, co, bot)
-		/*} else {
-			tentaTiveExplovie = 0
-		}*/
+		validCoordLF = getCorrectCoord(ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System, Position: coord.Position + 1})
+		//co := getCorrectCoord(ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System, Position: coord.Position + 1})
+		return -1
 	}
 
 	return 0

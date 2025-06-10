@@ -1,12 +1,32 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
+	"net/url"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/alaingilbert/ogame/pkg/ogame"
 )
+
+func sendTelegramMessage(token, chatID, message string) {
+	apiURL := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", token)
+
+	resp, err := http.PostForm(apiURL, url.Values{
+		"chat_id": {chatID},
+		"text":    {message},
+	})
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	fmt.Println("✅ Message envoyé avec succès.")
+}
 
 func getCorrectCoord(coord ogame.Coordinate) ogame.Coordinate {
 	pos := coord.Position
@@ -72,4 +92,21 @@ func getCargoPathFinder() int64 {
 	lfBonuses, _ := boot.GetCachedLfBonuses()
 	multiplier := float64(boot.GetServerData().CargoHyperspaceTechMultiplier) / 100.0
 	return ogame.Pathfinder.GetCargoCapacity(boot.GetCachedResearch(), lfBonuses, boot.CharacterClass(), multiplier, boot.GetServer().ProbeRaidsEnabled())
+}
+
+func readJSONCoordFdV() ogame.Coordinate {
+	file, err := os.Open("C:\\Users\\Utilisateur\\Documents\\ogameBot\\data.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+	var coord ogame.Coordinate
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&coord)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("Nom: %s\n", coord)
+	return coord
 }

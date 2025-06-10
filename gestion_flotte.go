@@ -99,3 +99,19 @@ func getMaxExpeDebris(g int) {
 		fmt.Println(list[i])
 	}
 }
+
+func getCompoFlotteExpe(planete ogame.EmpireCelestial) ogame.ShipsInfos {
+	var shipsInfos ogame.ShipsInfos
+	shipsInfos.LargeCargo = planete.Ships.LargeCargo
+	shipsInfos.SmallCargo = planete.Ships.SmallCargo
+	if planete.Ships.Pathfinder > 0 {
+		shipsInfos.Pathfinder = 1
+	}
+	if planete.Ships.EspionageProbe >= 10 {
+		shipsInfos.EspionageProbe = 10
+	} else {
+		shipsInfos.EspionageProbe = planete.Ships.EspionageProbe
+	}
+
+	return shipsInfos
+}

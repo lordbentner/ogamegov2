@@ -61,14 +61,19 @@ func buildFormeVie(planete ogame.EmpireCelestial) {
 	buildFormeVieRocktas(planete)
 	buildFormeVieKaelesh(planete)
 	boot.BuildBuilding(planete.ID, ogame.RuneForgeID)
-	if planete.LfBuildings.ResearchCentre < 5 || planete.LfBuildings.VortexChamber < 5 || planete.LfBuildings.RuneTechnologium < 5 {
+	if planete.LfBuildings.ResearchCentre < 5 {
 		boot.BuildBuilding(planete.ID, ogame.ResearchCentreID)
-		boot.BuildBuilding(planete.ID, ogame.RuneTechnologiumID)
-		boot.BuildBuilding(planete.ID, ogame.VortexChamberID)
-	} else {
-		boot.BuildBuilding(planete.ID, ogame.HighEnergySmeltingID)
-		boot.BuildBuilding(planete.ID, ogame.MagmaForgeID)
 	}
+
+	if planete.LfBuildings.VortexChamber < 5 {
+		boot.BuildBuilding(planete.ID, ogame.VortexChamberID)
+	}
+	if planete.LfBuildings.RuneTechnologium < 5 {
+		boot.BuildBuilding(planete.ID, ogame.RuneTechnologiumID)
+	}
+
+	boot.BuildBuilding(planete.ID, ogame.HighEnergySmeltingID)
+	boot.BuildBuilding(planete.ID, ogame.MagmaForgeID)
 
 	res := planete.LfBuildings.ResidentialSector < 41 && planete.LfBuildings.ResidentialSector > 0
 	med := planete.LfBuildings.MeditationEnclave < 41 && planete.LfBuildings.MeditationEnclave > 0
@@ -151,7 +156,7 @@ func buildResources(planete ogame.EmpireCelestial) {
 		if planete.Resources.Energy < 0 {
 			err := boot.BuildBuilding(planete.ID, ogame.SolarPlantID)
 			if err != nil {
-				satProduction(planete)
+				//satProduction(planete)
 			} else {
 				fmt.Println("construction solar plant")
 			}

@@ -32,19 +32,28 @@ func getFastestResearch(planete ogame.EmpireCelestial) {
 	}
 
 	sort.Slice(list, func(i int, j int) bool {
-		basecost := int64(list[i].ProductionDuration.Seconds()) * (list[i].Level + 1)
-		j_basecost := int64(list[j].ProductionDuration.Seconds()) * (list[j].Level + 1)
+		pricecost_i := list[i].Price.Metal + list[i].Price.Crystal + list[i].Price.Deuterium
+		pricecost_j := list[j].Price.Metal + list[j].Price.Crystal + list[j].Price.Deuterium
+		basecost := pricecost_i * (list[i].Level + 1)
+		j_basecost := pricecost_j * (list[j].Level + 1)
 		return basecost < j_basecost
 	})
 
 	for _, elem := range list {
-		boot.BuildTechnology(planete.ID, elem.TechnologyID)
+		if elem.ProductionDuration.Seconds() > 0 || elem.ProductionDuration.Minutes() > 0 || elem.ProductionDuration.Hours() > 0 {
+			fmt.Println(elem)
+			boot.BuildTechnology(planete.ID, elem.TechnologyID)
+		}
 	}
 }
 
 func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.Slots) {
 	res, _ := bot.GetResearch()
 	id := planete.ID
+
+	if res.ComputerTechnology < 10 {
+		bot.BuildTechnology(id, ogame.ComputerTechnologyID)
+	}
 
 	if res.Astrophysics == 0 && res.EspionageTechnology < 4 && res.ImpulseDrive < 3 {
 		if res.EspionageTechnology < 4 {
