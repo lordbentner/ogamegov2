@@ -25,13 +25,17 @@ func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGam
 		fmt.Printf("fleet send to life discovery from %s to %s\n", coord.String(), coord)
 		coord.Position = coord.Position + 1
 		validCoordLF = getCorrectCoord(validCoordLF)
+		time.Sleep(1 * time.Second)
+		_, slots := bot.GetFleets()
+		if slots.InUse < slots.Total {
+			return setExploVie(id, validCoordLF, bot)
+		}
 	}
 
 	if nbError > 0 {
 		fmt.Printf("%d erreurs d'envoie d'explo vie détectés\n", nbError)
 		time.Sleep(1 * time.Second)
 		validCoordLF = getCorrectCoord(ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System, Position: coord.Position + 1})
-		//co := getCorrectCoord(ogame.Coordinate{Galaxy: coord.Galaxy, System: coord.System, Position: coord.Position + 1})
 		return -1
 	}
 

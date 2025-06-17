@@ -115,3 +115,23 @@ func getCompoFlotteExpe(planete ogame.EmpireCelestial) ogame.ShipsInfos {
 
 	return shipsInfos
 }
+
+func sendFleetToMoon(moon ogame.EmpireCelestial) {
+	empire, _ := boot.GetEmpire(ogame.PlanetType)
+	for _, pl := range empire {
+		sys := pl.Coordinate.System == moon.Coordinate.System
+		if pl.Coordinate.Galaxy == moon.Coordinate.Galaxy && sys && pl.Coordinate.Position == moon.Coordinate.Position {
+			//boot.SendFleet(moon.ID, sh, 100, moon.Coordinate.Planet(), ogame.Transport, resources, 0, 0)
+			res := ogame.Resources{}
+			if moon.Resources.Deuterium < 200000 && pl.Resources.Deuterium > 200000 {
+				res.Deuterium = 200000
+			}
+
+			_, err := boot.SendFleet(pl.ID, pl.Ships, 100, moon.Coordinate, ogame.Park, res, 0, 0)
+			if err != nil {
+				fmt.Printf("Error sendFleetToMoon : %s\n", err)
+			}
+			break
+		}
+	}
+}

@@ -20,7 +20,9 @@ var boot *wrapper.OGame
 func getFlottePourExpe(bot *wrapper.OGame) {
 	att, _ := bot.IsUnderAttack()
 	if att {
+		info, _ := bot.GetAttacks()
 		sendTelegramMessage(botToken, chatID, "ATTAQUE EN COURS!")
+		sendTelegramMessage(botToken, chatID, fmt.Sprint(info))
 	}
 
 	/*getMaxExpeDebris(4)
@@ -67,15 +69,16 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 	//validCoordLF = readJSONCoordFdV()
 	//fmt.Println(validCoordLF)
 	//os.Exit(0)
-	HasMoonRes := false
+	//HasMoonRes := false
 	for i, planete := range empire {
 		fmt.Printf("======================= planete %s(%s) =========================\n", planete.Name, planete.Coordinate)
 
 		if planete.Type == ogame.MoonType {
 			buildMoon(planete, bot)
 			if slots.ExpInUse >= slots.ExpTotal && slots.InUse < slots.Total {
-				if planete.Type == ogame.MoonType && sendFleetFromMoonToPlanet(planete) {
-					HasMoonRes = true
+				sendFleetToMoon(planete)
+				if sendFleetFromMoonToPlanet(planete) {
+					//HasMoonRes = true
 				}
 			}
 		} else if planete.Fields.Built < planete.Fields.Total-2 {
@@ -119,7 +122,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		CargoExpeInsuffisant = 0
 	}
 
-	if slots.ExpInUse >= slots.ExpTotal && slots.InUse < slots.Total && !HasMoonRes {
+	if slots.ExpInUse >= slots.ExpTotal && slots.InUse < slots.Total /*&& !HasMoonRes*/ {
 		sort.Slice(empire, func(i int, j int) bool {
 			resources_i := empire[i].Resources.Metal + empire[i].Resources.Crystal + empire[i].Resources.Deuterium
 			resources_j := empire[j].Resources.Metal + empire[j].Resources.Crystal + empire[j].Resources.Deuterium
