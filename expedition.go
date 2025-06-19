@@ -9,7 +9,7 @@ import (
 )
 
 var maxCargo int = 120000000
-var validCoordLF ogame.Coordinate = ogame.Coordinate{Galaxy: 5, System: 25, Position: 1}
+var validCoordLF ogame.Coordinate = ogame.Coordinate{Galaxy: 5, System: 31, Position: 1}
 
 func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGame) int {
 	fmt.Println("Gestion exploration forme de vie")
