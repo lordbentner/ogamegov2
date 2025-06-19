@@ -1,7 +1,10 @@
 {
   "functions": {
-    "api/hello.go": {
+    "api/main.go": {
       "runtime": "go@1.24.1"
     }
-  }
+  },
+  "routes": [
+    { "src": "/.*", "dest": "/api/main.go" }
+  ]
 }
