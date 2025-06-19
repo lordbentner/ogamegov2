@@ -27,7 +27,6 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 
 	/*getMaxExpeDebris(4)
 	getMaxExpeDebris(5)
-	getMaxExpeDebris(6)
 	os.Exit(0)*/
 
 	CargoExpeInsuffisant := 0
