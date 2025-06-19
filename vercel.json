@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/hello.go": {
+      "runtime": "go"
+    }
+  },
+  "routes": [
+    { "src": "/.*", "dest": "/api/hello.go" }
+  ]
+}
