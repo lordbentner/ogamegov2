@@ -3,8 +3,5 @@
     "api/hello.go": {
       "runtime": "go@1.24.1"
     }
-  },
-  "routes": [
-    { "src": "/.*", "dest": "/api/hello.go" }
-  ]
+  }
 }
