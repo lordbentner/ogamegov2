@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/alaingilbert/ogame/pkg/ogame"
-	"github.com/alaingilbert/ogame/pkg/wrapper"
 )
 
 func satProduction(planete ogame.EmpireCelestial) {
@@ -117,18 +116,18 @@ func buildFormeVie(planete ogame.EmpireCelestial) {
 	boot.BuildBuilding(planete.ID, ogame.CargoHoldExpansionCivilianShipsID)
 }
 
-func buildMoon(moon ogame.EmpireCelestial, bot *wrapper.OGame) {
+func buildMoon(moon ogame.EmpireCelestial) {
 	if moon.Facilities.JumpGate > 0 {
 		return
 	}
 	if moon.Fields.Built == moon.Fields.Total-2 && moon.Facilities.RoboticsFactory > 8 {
-		bot.BuildBuilding(moon.ID, ogame.JumpGateID)
+		boot.BuildBuilding(moon.ID, ogame.JumpGateID)
 	} else if moon.Fields.Built == moon.Fields.Total-1 {
-		bot.BuildBuilding(moon.ID, ogame.LunarBaseID)
+		boot.BuildBuilding(moon.ID, ogame.LunarBaseID)
 		fmt.Println("Construction base lunaire")
 	} else {
 		fmt.Println("Construction usine de robot")
-		bot.BuildBuilding(moon.ID, ogame.RoboticsFactoryID)
+		boot.BuildBuilding(moon.ID, ogame.RoboticsFactoryID)
 	}
 }
 

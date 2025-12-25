@@ -5,19 +5,18 @@ import (
 	"time"
 
 	"github.com/alaingilbert/ogame/pkg/ogame"
-	"github.com/alaingilbert/ogame/pkg/wrapper"
 )
 
 var maxCargo int = 120000000
-var validCoordLF ogame.Coordinate = ogame.Coordinate{Galaxy: 5, System: 31, Position: 1}
+var validCoordLF ogame.Coordinate = ogame.Coordinate{Galaxy: 5, System: 140, Position: 1}
 
-func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGame) int {
+func setExploVie(id ogame.CelestialID, coord ogame.Coordinate) int {
 	fmt.Println("Gestion exploration forme de vie")
 	nbError := 0
 	if validCoordLF.Galaxy != 0 {
 		coord = validCoordLF
 	}
-	err := bot.SendDiscoveryFleet(id, coord)
+	err := boot.SendDiscoveryFleet(id, coord)
 	if err != nil {
 		nbError++
 		fmt.Printf("%s: Erreur d'envoie explo vie : %s", coord, err)
@@ -26,9 +25,9 @@ func setExploVie(id ogame.CelestialID, coord ogame.Coordinate, bot *wrapper.OGam
 		coord.Position = coord.Position + 1
 		validCoordLF = getCorrectCoord(validCoordLF)
 		time.Sleep(1 * time.Second)
-		_, slots := bot.GetFleets()
+		_, slots := boot.GetFleets()
 		if slots.InUse < slots.Total {
-			return setExploVie(id, validCoordLF, bot)
+			return setExploVie(id, validCoordLF)
 		}
 	}
 
@@ -95,9 +94,9 @@ func getFleetCompositionForExplo(sh ogame.ShipsInfos) ogame.ShipsInfos {
 	return shipsInfos
 }
 
-func SetExpedition(planete ogame.EmpireCelestial, bot *wrapper.OGame, coord ogame.Coordinate) bool {
-	sh, _ := bot.GetShips(planete.ID)
-	slots, _ := bot.GetSlots()
+func SetExpedition(planete ogame.EmpireCelestial, coord ogame.Coordinate) bool {
+	sh, _ := boot.GetShips(planete.ID)
+	slots, _ := boot.GetSlots()
 	totalCargo := (sh.LargeCargo * getCargoGT()) + (sh.SmallCargo * getCargoPT()) + (sh.Pathfinder * getCargoPathFinder())
 	if slots.ExpInUse >= slots.ExpTotal || totalCargo < int64(maxCargo) || slots.InUse >= slots.Total {
 		if totalCargo < int64(maxCargo) {
@@ -115,10 +114,10 @@ func SetExpedition(planete ogame.EmpireCelestial, bot *wrapper.OGame, coord ogam
 		co = planete.Coordinate
 	}
 	//bot.SendFleet(planete.ID, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
-	_, err := bot.SendFleet(planete.ID, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
+	_, err := boot.SendFleet(planete.ID, shipsInfos, 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
 	if err != nil {
 		pl := ogame.Coordinate{Galaxy: planete.Coordinate.Galaxy, System: planete.Coordinate.System, Position: 16}
-		bot.SendFleet(planete.ID, shipsInfos, 100, pl, ogame.Expedition, ogame.Resources{}, 0, 0)
+		boot.SendFleet(planete.ID, shipsInfos, 100, pl, ogame.Expedition, ogame.Resources{}, 0, 0)
 	}
 	fmt.Printf("fleet send to expedition from %s with this fleet: ", coord.String())
 	printStructFields(shipsInfos)
@@ -126,11 +125,11 @@ func SetExpedition(planete ogame.EmpireCelestial, bot *wrapper.OGame, coord ogam
 	return true
 }
 
-func gestionMessagesExpe(bot *wrapper.OGame) ogame.ExpeditionMessage {
-	expMes, err := bot.GetExpeditionMessages(1)
+func gestionMessagesExpe() ogame.ExpeditionMessage {
+	expMes, err := boot.GetExpeditionMessages(1)
 	if err == nil {
 		for i := 2; i < 20; i++ {
-			exptest, er := bot.GetExpeditionMessages(int64(i))
+			exptest, er := boot.GetExpeditionMessages(int64(i))
 			if er != nil {
 				break
 			} else {

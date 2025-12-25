@@ -17,12 +17,26 @@ var botToken string
 var chatID string
 var boot *wrapper.OGame
 
-func getFlottePourExpe(bot *wrapper.OGame) {
-	att, _ := bot.IsUnderAttack()
+func gestionAttack() {
+	attacks, _ := boot.GetAttacks()
+	//empire, _ := boot.GetEmpire()
+	sendTelegramMessage(botToken, chatID, "ATTAQUE EN COURS!")
+	sendTelegramMessage(botToken, chatID, fmt.Sprint(attacks))
+
+	/*for _, attack := range attacks {
+		for _, planete := range empire {
+			if planete.Coordinate == attack.Destination {
+				fmt.Println("attack ")
+				break
+			}
+		}
+	}*/
+}
+
+func getFlottePourExpe() {
+	att, _ := boot.IsUnderAttack()
 	if att {
-		info, _ := bot.GetAttacks()
-		sendTelegramMessage(botToken, chatID, "ATTAQUE EN COURS!")
-		sendTelegramMessage(botToken, chatID, fmt.Sprint(info))
+		gestionAttack()
 	}
 
 	/*getMaxExpeDebris(4)
@@ -31,7 +45,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 
 	CargoExpeInsuffisant := 0
 
-	fleets, slots := bot.GetFleets()
+	fleets, slots := boot.GetFleets()
 	fmt.Println("=====================Flottes=======================")
 	fmt.Printf("%s slots: ", time.Now().Format(time.RFC850))
 	fmt.Println(slots)
@@ -40,7 +54,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		printStructFields(fleet.Ships)
 	}
 	fmt.Println("====================================================")
-	empire, _ := bot.GetEmpire(ogame.PlanetType)
+	empire, _ := boot.GetEmpire(ogame.PlanetType)
 	if len(empire) == 0 {
 		fmt.Println(empire)
 		return
@@ -48,10 +62,10 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 
 	first_planet := empire[0]
 
-	empireMoon, _ := bot.GetEmpire(ogame.MoonType)
+	empireMoon, _ := boot.GetEmpire(ogame.MoonType)
 	empire = append(empire, empireMoon...)
 	empire = sliceEmpireCargo(empire)
-	expeMes := gestionMessagesExpe(bot)
+	expeMes := gestionMessagesExpe()
 	coordExpe := expeMes.Coordinate
 	fmt.Println(coordExpe)
 	if changeSystemeExploration(expeMes.Content) {
@@ -73,7 +87,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		fmt.Printf("======================= planete %s(%s) =========================\n", planete.Name, planete.Coordinate)
 
 		if planete.Type == ogame.MoonType {
-			buildMoon(planete, bot)
+			buildMoon(planete)
 			if slots.ExpInUse >= slots.ExpTotal && slots.InUse < slots.Total {
 				sendFleetToMoon(planete)
 				if sendFleetFromMoonToPlanet(planete) {
@@ -83,29 +97,29 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 		} else if planete.Fields.Built < planete.Fields.Total-2 {
 			buildResources(planete)
 		} else {
-			bot.BuildBuilding(planete.ID, ogame.TerraformerID)
+			boot.BuildBuilding(planete.ID, ogame.TerraformerID)
 		}
 
 		if planete.Facilities.ResearchLab < 12 && i == 0 {
-			bot.BuildBuilding(planete.ID, ogame.ResearchLabID)
+			boot.BuildBuilding(planete.ID, ogame.ResearchLabID)
 		}
 
 		buildFormeVie(planete)
-		if !SetExpedition(planete, bot, coordExpe) {
+		if !SetExpedition(planete, coordExpe) {
 			CargoExpeInsuffisant++
 		}
-		printCurrentconstruction(planete.ID, bot)
+		printCurrentconstruction(planete.ID, boot)
 	}
 
-	Researches(first_planet, bot, slots)
+	Researches(first_planet, slots)
 
-	_, slots = bot.GetFleets()
+	_, slots = boot.GetFleets()
 	if slots.ExpInUse < slots.ExpTotal && slots.InUse < slots.Total {
 		empire = sliceEmpireCargo(empire)
 		for _, planete := range empire {
 			co := planete.Coordinate
 			co.Position = 16
-			_, err := bot.SendFleet(planete.ID, getCompoFlotteExpe(planete), 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
+			_, err := boot.SendFleet(planete.ID, getCompoFlotteExpe(planete), 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
 			if err != nil {
 				fmt.Printf("Erreur envoie expe restant : %s\n", err)
 				if strings.Contains(err.Error(), "all slots are in use") {
@@ -128,7 +142,7 @@ func getFlottePourExpe(bot *wrapper.OGame) {
 			HasValidForExplo := empire[i].Resources.Metal > 5000 && empire[i].Resources.Crystal > 5000 && empire[i].Resources.Deuterium > 5000
 			return resources_i > resources_j && HasValidForExplo
 		})
-		setExploVie(empire[0].ID, empire[0].Coordinate, bot)
+		setExploVie(empire[0].ID, empire[0].Coordinate)
 	}
 }
 
@@ -139,10 +153,10 @@ func main() {
 	language := os.Getenv("LANGUAGE")
 	botToken = os.Getenv("BOTTOKEN")
 	chatID = os.Getenv("CHATID") // Exemple : "123456789"
-	fmt.Printf("Paramètres utilisateur récupéré => univers: %s username: %s mdp:%s language: %s\n", universe, username, password, language)
-	universe = "Quasi-Stellar"
+	username = "wesoc78739@fftube.com"
+	fmt.Printf("Paramètres utilisateur récupéré => univers: %s, username: %s, mdp:%s, language: %s\n", universe, username, password, language)
 
-	deviceName := "DEVICE-NAME"
+	deviceName := "device_name"
 	deviceInst, err := device.NewBuilder(deviceName).
 		SetOsName(device.Windows).
 		SetBrowserName(device.Chrome).
@@ -174,21 +188,25 @@ func main() {
 		panic(err)
 	}
 
-	ff, _ := bot.LoginWithExistingCookies()
+	ff, err := bot.LoginWithExistingCookies()
 	if !ff {
+		fmt.Println("Lgin Cookiees failed : ")
+		fmt.Println(err)
 		bot.Login()
 	}
 
 	connect(bot)
-	bot.Logout()
+	boot.Logout()
 }
 
 func connect(bot *wrapper.OGame) bool {
 	fmt.Printf("%s Connexion", time.Now().Format(time.RFC850))
 	bot.LoginWithExistingCookies()
 	boot = bot
-	time.Sleep(5000)
-	getFlottePourExpe(bot)
-	bot.Logout()
+	if bot.IsConnected() && bot.IsLoggedIn() {
+		time.Sleep(5000)
+		getFlottePourExpe()
+		boot.Logout()
+	}
 	return connect(bot)
 }

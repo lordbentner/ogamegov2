@@ -5,7 +5,6 @@ import (
 	"sort"
 
 	"github.com/alaingilbert/ogame/pkg/ogame"
-	"github.com/alaingilbert/ogame/pkg/wrapper"
 )
 
 func getFastestResearch(planete ogame.EmpireCelestial) {
@@ -47,45 +46,45 @@ func getFastestResearch(planete ogame.EmpireCelestial) {
 	}
 }
 
-func Researches(planete ogame.EmpireCelestial, bot *wrapper.OGame, slots ogame.Slots) {
-	res, _ := bot.GetResearch()
+func Researches(planete ogame.EmpireCelestial, slots ogame.Slots) {
+	res, _ := boot.GetResearch()
 	id := planete.ID
 
 	if res.ComputerTechnology < 10 {
-		bot.BuildTechnology(id, ogame.ComputerTechnologyID)
+		boot.BuildTechnology(id, ogame.ComputerTechnologyID)
 	}
 
 	if res.Astrophysics == 0 && res.EspionageTechnology < 4 && res.ImpulseDrive < 3 {
 		if res.EspionageTechnology < 4 {
-			bot.BuildTechnology(id, ogame.EspionageTechnologyID)
+			boot.BuildTechnology(id, ogame.EspionageTechnologyID)
 		}
 
 		if res.ImpulseDrive < 3 {
-			bot.BuildTechnology(id, ogame.ImpulseDriveID)
+			boot.BuildTechnology(id, ogame.ImpulseDriveID)
 		}
 
 		return
 	}
 
-	bot.BuildTechnology(id, ogame.AstrophysicsID)
+	boot.BuildTechnology(id, ogame.AstrophysicsID)
 	if res.ImpulseDrive < 3 {
-		bot.BuildTechnology(id, ogame.ImpulseDriveID)
+		boot.BuildTechnology(id, ogame.ImpulseDriveID)
 	}
 
 	if res.EnergyTechnology < 12 {
-		bot.BuildTechnology(id, ogame.EnergyTechnologyID)
+		boot.BuildTechnology(id, ogame.EnergyTechnologyID)
 	}
 
 	if res.EspionageTechnology < 8 {
-		bot.BuildTechnology(id, ogame.EspionageTechnologyID)
+		boot.BuildTechnology(id, ogame.EspionageTechnologyID)
 	}
 
 	if res.LaserTechnology < 10 {
-		bot.BuildTechnology(id, ogame.LaserTechnologyID)
+		boot.BuildTechnology(id, ogame.LaserTechnologyID)
 	}
 
 	if res.IonTechnology < 5 {
-		bot.BuildTechnology(id, ogame.IonTechnologyID)
+		boot.BuildTechnology(id, ogame.IonTechnologyID)
 	}
 
 	getFastestResearch(planete)
