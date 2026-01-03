@@ -175,6 +175,7 @@ const Report EspionageReportType = 1
 type CombatReportSummary struct {
 	ID           int64
 	APIKey       string
+	FleetID      FleetID
 	Origin       *Coordinate
 	Destination  Coordinate
 	AttackerName string
@@ -266,4 +267,33 @@ type ACSValues struct {
 	Name          string
 	ACSValues     string // Raw string is used to send fleet. eg: `1#2#3#3#name#123456`
 	Union         int64
+}
+
+type Relocation struct {
+	MoveLink             string
+	PlanetMovePossible   bool
+	SufficientDarkMatter bool
+	MissionType          MissionID
+	DarkMatterCost       int64
+}
+
+type MinifleetResponse struct {
+	Response struct {
+		Message     string `json:"message"` // `Send espionage probe to:`
+		Type        int    `json:"type"`
+		Slots       int    `json:"slots"`  // slots used by the minifleet call
+		Probes      int    `json:"probes"` // probes remaining on the celestial
+		Recyclers   int    `json:"recyclers"`
+		Explorers   int    `json:"explorers"`
+		Missiles    int    `json:"missiles"`
+		ShipsSent   int    `json:"shipsSent"`
+		Coordinates struct {
+			Galaxy   int `json:"galaxy"`
+			System   int `json:"system"`
+			Position int `json:"position"`
+		} `json:"coordinates"`
+		PlanetType int  `json:"planetType"` // 1/3 = planet/moon
+		Success    bool `json:"success"`
+	} `json:"response"`
+	NewAjaxToken string `json:"newAjaxToken"`
 }

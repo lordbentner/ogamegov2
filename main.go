@@ -3,19 +3,15 @@ package main
 import (
 	"fmt"
 	"os"
-	"sort"
-	"strings"
 	"time"
 
 	"github.com/alaingilbert/ogame/pkg/device"
-	"github.com/alaingilbert/ogame/pkg/ogame"
+	"github.com/alaingilbert/ogame/pkg/gameforge/solvers"
 	"github.com/alaingilbert/ogame/pkg/wrapper"
-	"github.com/alaingilbert/ogame/pkg/wrapper/solvers"
 )
 
 var botToken string
 var chatID string
-var boot *wrapper.OGame
 
 func gestionAttack() {
 	attacks, _ := boot.GetAttacks()
@@ -33,119 +29,6 @@ func gestionAttack() {
 	}*/
 }
 
-func getFlottePourExpe() {
-	att, _ := boot.IsUnderAttack()
-	if att {
-		gestionAttack()
-	}
-
-	/*getMaxExpeDebris(4)
-	getMaxExpeDebris(5)
-	os.Exit(0)*/
-
-	CargoExpeInsuffisant := 0
-
-	fleets, slots := boot.GetFleets()
-	fmt.Println("=====================Flottes=======================")
-	fmt.Printf("%s slots: ", time.Now().Format(time.RFC850))
-	fmt.Println(slots)
-	for i, fleet := range fleets {
-		fmt.Printf("flotte %d ==> ", i)
-		printStructFields(fleet.Ships)
-	}
-	fmt.Println("====================================================")
-	empire, _ := boot.GetEmpire(ogame.PlanetType)
-	if len(empire) == 0 {
-		fmt.Println(empire)
-		return
-	}
-
-	first_planet := empire[0]
-
-	empireMoon, _ := boot.GetEmpire(ogame.MoonType)
-	empire = append(empire, empireMoon...)
-	empire = sliceEmpireCargo(empire)
-	expeMes := gestionMessagesExpe()
-	coordExpe := expeMes.Coordinate
-	fmt.Println(coordExpe)
-	if changeSystemeExploration(expeMes.Content) {
-		coordMain := empire[0].Coordinate
-		sys := coordExpe.System + 1
-		if sys > coordMain.System+10 {
-			sys = coordMain.System
-		}
-
-		coordExpe = ogame.Coordinate{Galaxy: coordExpe.Galaxy, System: sys, Position: 16}
-	}
-
-	fmt.Println("================================================================")
-	//validCoordLF = readJSONCoordFdV()
-	//fmt.Println(validCoordLF)
-	//os.Exit(0)
-	//HasMoonRes := false
-	for i, planete := range empire {
-		fmt.Printf("======================= planete %s(%s) =========================\n", planete.Name, planete.Coordinate)
-
-		if planete.Type == ogame.MoonType {
-			buildMoon(planete)
-			if slots.ExpInUse >= slots.ExpTotal && slots.InUse < slots.Total {
-				sendFleetToMoon(planete)
-				if sendFleetFromMoonToPlanet(planete) {
-					//HasMoonRes = true
-				}
-			}
-		} else if planete.Fields.Built < planete.Fields.Total-2 {
-			buildResources(planete)
-		} else {
-			boot.BuildBuilding(planete.ID, ogame.TerraformerID)
-		}
-
-		if planete.Facilities.ResearchLab < 12 && i == 0 {
-			boot.BuildBuilding(planete.ID, ogame.ResearchLabID)
-		}
-
-		buildFormeVie(planete)
-		if !SetExpedition(planete, coordExpe) {
-			CargoExpeInsuffisant++
-		}
-		printCurrentconstruction(planete.ID, boot)
-	}
-
-	Researches(first_planet, slots)
-
-	_, slots = boot.GetFleets()
-	if slots.ExpInUse < slots.ExpTotal && slots.InUse < slots.Total {
-		empire = sliceEmpireCargo(empire)
-		for _, planete := range empire {
-			co := planete.Coordinate
-			co.Position = 16
-			_, err := boot.SendFleet(planete.ID, getCompoFlotteExpe(planete), 100, co, ogame.Expedition, ogame.Resources{}, 0, 0)
-			if err != nil {
-				fmt.Printf("Erreur envoie expe restant : %s\n", err)
-				if strings.Contains(err.Error(), "all slots are in use") {
-					break
-				}
-			} else {
-
-			}
-
-			time.Sleep(4 * time.Second)
-		}
-
-		CargoExpeInsuffisant = 0
-	}
-
-	if slots.ExpInUse >= slots.ExpTotal && slots.InUse < slots.Total /*&& !HasMoonRes*/ {
-		sort.Slice(empire, func(i int, j int) bool {
-			resources_i := empire[i].Resources.Metal + empire[i].Resources.Crystal + empire[i].Resources.Deuterium
-			resources_j := empire[j].Resources.Metal + empire[j].Resources.Crystal + empire[j].Resources.Deuterium
-			HasValidForExplo := empire[i].Resources.Metal > 5000 && empire[i].Resources.Crystal > 5000 && empire[i].Resources.Deuterium > 5000
-			return resources_i > resources_j && HasValidForExplo
-		})
-		setExploVie(empire[0].ID, empire[0].Coordinate)
-	}
-}
-
 func main() {
 	universe := os.Getenv("UNIVERSE")
 	username := os.Getenv("USERNAME") // eg: email@gmail.com
@@ -153,11 +36,9 @@ func main() {
 	language := os.Getenv("LANGUAGE")
 	botToken = os.Getenv("BOTTOKEN")
 	chatID = os.Getenv("CHATID") // Exemple : "123456789"
-	username = "wesoc78739@fftube.com"
 	fmt.Printf("Paramètres utilisateur récupéré => univers: %s, username: %s, mdp:%s, language: %s\n", universe, username, password, language)
 
-	deviceName := "device_name"
-	deviceInst, err := device.NewBuilder(deviceName).
+	deviceInst, err := device.NewBuilder("device_name").
 		SetOsName(device.Windows).
 		SetBrowserName(device.Chrome).
 		SetMemory(8).
@@ -173,29 +54,28 @@ func main() {
 		panic(err)
 	}
 
-	params := wrapper.Params{
-		Universe:        universe,
-		Username:        username,
-		Password:        password,
-		Lang:            language,
-		AutoLogin:       false,
-		Device:          deviceInst,
-		CaptchaCallback: solvers.ManualSolver(),
-	}
-	bot, err := wrapper.NewWithParams(params)
+	b, err := wrapper.NewWithParams(wrapper.Params{
+		Universe:      universe,
+		Username:      username,
+		Password:      password,
+		Lang:          language,
+		AutoLogin:     true,
+		Device:        deviceInst,
+		CaptchaSolver: solvers.ManualSolver(),
+	})
 
 	if err != nil {
 		panic(err)
 	}
 
-	ff, err := bot.LoginWithExistingCookies()
+	ff, _, err := b.LoginWithExistingCookies()
 	if !ff {
 		fmt.Println("Lgin Cookiees failed : ")
 		fmt.Println(err)
-		bot.Login()
+		b.Login()
 	}
 
-	connect(bot)
+	connect(b)
 	boot.Logout()
 }
 

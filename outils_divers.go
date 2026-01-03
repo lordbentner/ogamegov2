@@ -79,19 +79,22 @@ func convertSecToTime(seconds int64) string {
 func getCargoGT() int64 {
 	lfBonuses, _ := boot.GetCachedLfBonuses()
 	multiplier := float64(boot.GetServerData().CargoHyperspaceTechMultiplier) / 100.0
-	return ogame.LargeCargo.GetCargoCapacity(boot.GetCachedResearch(), lfBonuses, boot.CharacterClass(), multiplier, boot.GetServer().ProbeRaidsEnabled())
+	probe := boot.GetServer().OGameSettings().ProbeRaidsEnabled()
+	return ogame.LargeCargo.GetCargoCapacity(boot.GetCachedResearch(), lfBonuses, boot.CharacterClass(), multiplier, probe)
 }
 
 func getCargoPT() int64 {
 	lfBonuses, _ := boot.GetCachedLfBonuses()
 	multiplier := float64(boot.GetServerData().CargoHyperspaceTechMultiplier) / 100.0
-	return ogame.SmallCargo.GetCargoCapacity(boot.GetCachedResearch(), lfBonuses, boot.CharacterClass(), multiplier, boot.GetServer().ProbeRaidsEnabled())
+	probe := boot.GetServer().OGameSettings().ProbeRaidsEnabled()
+	return ogame.SmallCargo.GetCargoCapacity(boot.GetCachedResearch(), lfBonuses, boot.CharacterClass(), multiplier, probe)
 }
 
 func getCargoPathFinder() int64 {
 	lfBonuses, _ := boot.GetCachedLfBonuses()
 	multiplier := float64(boot.GetServerData().CargoHyperspaceTechMultiplier) / 100.0
-	return ogame.Pathfinder.GetCargoCapacity(boot.GetCachedResearch(), lfBonuses, boot.CharacterClass(), multiplier, boot.GetServer().ProbeRaidsEnabled())
+	probe := boot.GetServer().OGameSettings().ProbeRaidsEnabled()
+	return ogame.Pathfinder.GetCargoCapacity(boot.GetCachedResearch(), lfBonuses, boot.CharacterClass(), multiplier, probe)
 }
 
 func readJSONCoordFdV() ogame.Coordinate {

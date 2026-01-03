@@ -25,12 +25,13 @@ type (
 	}
 
 	ContentJson struct {
-		Galaxy   CInt64      `json:"galaxy"`
-		System   CInt64      `json:"system"`
-		Position CInt64      `json:"position"`
-		Planets  PlanetsList `json:"planets"`
-		Player   PlayerJson  `json:"player"`
-		Filters  string      `json:"positionFilters"`
+		Galaxy            CInt64           `json:"galaxy"`
+		System            CInt64           `json:"system"`
+		Position          CInt64           `json:"position"`
+		Planets           PlanetsList      `json:"planets"`
+		Player            PlayerJson       `json:"player"`
+		Filters           string           `json:"positionFilters"`
+		AvailableMissions []map[string]any `json:"availableMissions"`
 	}
 
 	PlanetsList []PlanetJson
@@ -59,22 +60,31 @@ type (
 	}
 
 	PlayerJson struct {
-		PlayerID          CInt64   `json:"playerId"`
-		PlayerName        string   `json:"playerName"`
-		AllianceID        CInt64   `json:"allianceId"`
-		AllianceName      string   `json:"allianceName"`
-		AllianceTag       string   `json:"allianceTag"`
-		IsAllianceMember  bool     `json:"isAllianceMember"`
-		PositionPlayer    CInt64   `json:"highscorePositionPlayer"`
-		PositionAlliance  CInt64   `json:"highscorePositionAlliance"`
-		IsAdmin           bool     `json:"isAdmin"`
-		IsBanned          bool     `json:"isBanned"`
-		IsOnVacation      bool     `json:"isOnVacation"`
-		IsNewbie          bool     `json:"isNewbie"`
-		IsStrong          bool     `json:"isStrong"`
-		IsHonorableTarget bool     `json:"isHonorableTarget"`
-		IsInactive        bool     `json:"isInactive"`
-		Rank              RankJson `json:"rank"`
+		PlayerID          CInt64      `json:"playerId"`
+		PlayerName        string      `json:"playerName"`
+		AllianceID        CInt64      `json:"allianceId"`
+		AllianceName      string      `json:"allianceName"`
+		AllianceTag       string      `json:"allianceTag"`
+		IsAllianceMember  bool        `json:"isAllianceMember"`
+		PositionPlayer    CInt64      `json:"highscorePositionPlayer"`
+		PositionAlliance  CInt64      `json:"highscorePositionAlliance"`
+		IsAdmin           bool        `json:"isAdmin"`
+		IsBanned          bool        `json:"isBanned"`
+		IsOnVacation      bool        `json:"isOnVacation"`
+		IsNewbie          bool        `json:"isNewbie"`
+		IsStrong          bool        `json:"isStrong"`
+		IsHonorableTarget bool        `json:"isHonorableTarget"`
+		IsInactive        bool        `json:"isInactive"`
+		Rank              RankJson    `json:"rank"`
+		Actions           ActionsJson `json:"actions"`
+	}
+
+	ActionsJson struct {
+		Alliance AllianceJson `json:"alliance"`
+	}
+
+	AllianceJson struct {
+		MemberCount CInt64 `json:"memberCount"`
 	}
 
 	RankJson struct {
@@ -197,6 +207,26 @@ func extractGalaxyInfos(pageHTML []byte, botPlayerName string, botPlayerID, botP
 
 	for i, pos := range tmp.System.Content {
 
+		for _, missionRaw := range pos.AvailableMissions {
+			if missionTypeRaw, ok := missionRaw["missionType"]; ok {
+				if missionTypeF64, ok := missionTypeRaw.(float64); ok {
+					if ogame.MissionID(missionTypeF64) == ogame.Relocate {
+						moveLinkRaw, _ := missionRaw["moveLink"]
+						planetMovePossible, _ := missionRaw["planetMovePossible"]
+						sufficientDarkMatter, _ := missionRaw["sufficientDarkMatter"]
+						darkMatterCost, _ := missionRaw["darkMatterCost"]
+						res.Relocations[i] = ogame.Relocation{
+							MoveLink:             moveLinkRaw.(string),
+							PlanetMovePossible:   planetMovePossible.(bool),
+							SufficientDarkMatter: sufficientDarkMatter.(bool),
+							MissionType:          ogame.MissionID(missionTypeF64),
+							DarkMatterCost:       int64(darkMatterCost.(float64)),
+						}
+					}
+				}
+			}
+		}
+
 		if pos.Position.Int64() == 16 {
 			res.ExpeditionDebris.Metal = pos.Planets[0].Resources.Metal
 			res.ExpeditionDebris.Crystal = pos.Planets[0].Resources.Crystal
@@ -254,9 +284,7 @@ func extractGalaxyInfos(pageHTML []byte, botPlayerName string, botPlayerID, botP
 					planetInfos.Alliance.Name = player.AllianceName
 					planetInfos.Alliance.Tag = player.AllianceTag
 					planetInfos.Alliance.Rank = player.PositionAlliance.Int64()
-					if player.IsAllianceMember {
-						planetInfos.Alliance.Member = 1
-					}
+					planetInfos.Alliance.Member = player.Actions.Alliance.MemberCount.Int64()
 				}
 
 			} else if planet.PlanetType.Int64() == ogame.MoonType.Int64() {

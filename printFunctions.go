@@ -45,11 +45,11 @@ func printStructFields(s interface{}) string {
 }
 
 func printCurrentconstruction(id ogame.CelestialID, bot *wrapper.OGame) string {
-	buildingID, buildingCountdown, researchID, researchCountdown, lfBuildingID,
-		lfBuildingCountdown, lfResearchID, lfResearchCountdown := bot.ConstructionsBeingBuilt(id)
+	/*buildingID, buildingCountdown, researchID, researchCountdown, lfBuildingID,
+	lfBuildingCountdown, lfResearchID, lfResearchCountdown := bot.ConstructionsBeingBuilt(id)*/
 
 	print_str := "Construction en cours  ==> "
-	if buildingCountdown > 0 {
+	/*if buildingCountdown > 0 {
 		print_str += fmt.Sprintf("buildingID = %s, buildingCountdown = %s ", buildingID, convertSecToTime(buildingCountdown))
 	}
 	if researchCountdown > 0 {
@@ -60,7 +60,7 @@ func printCurrentconstruction(id ogame.CelestialID, bot *wrapper.OGame) string {
 	}
 	if lfResearchCountdown > 0 {
 		print_str += fmt.Sprintf("lfResearchID = %s, lfResearchCountdown = %s ", lfResearchID, convertSecToTime(lfResearchCountdown))
-	}
+	}*/
 
 	fmt.Println(print_str)
 	return print_str

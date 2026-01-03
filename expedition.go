@@ -25,7 +25,10 @@ func setExploVie(id ogame.CelestialID, coord ogame.Coordinate) int {
 		coord.Position = coord.Position + 1
 		validCoordLF = getCorrectCoord(validCoordLF)
 		time.Sleep(1 * time.Second)
-		_, slots := boot.GetFleets()
+		_, slots, errFleet := boot.GetFleets()
+		if errFleet != nil {
+			return -1
+		}
 		if slots.InUse < slots.Total {
 			return setExploVie(id, validCoordLF)
 		}
