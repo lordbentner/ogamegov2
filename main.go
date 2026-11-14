@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/alaingilbert/ogame/pkg/device"
-	"github.com/alaingilbert/ogame/pkg/gameforge/solvers"
+
 	"github.com/alaingilbert/ogame/pkg/wrapper"
 )
 
@@ -36,9 +36,31 @@ func main() {
 	language := os.Getenv("LANGUAGE")
 	botToken = os.Getenv("BOTTOKEN")
 	chatID = os.Getenv("CHATID") // Exemple : "123456789"
+	username = "wesoc78739@fftube.com"
+	password = "TheUndertaker300"
+	universe = "Dawn"
 	fmt.Printf("Paramètres utilisateur récupéré => univers: %s, username: %s, mdp:%s, language: %s\n", universe, username, password, language)
 
 	deviceInst, err := device.NewBuilder("device_name").
+		SetOsName(device.Windows).
+		SetBrowserName(device.Chrome).
+		SetMemory(8).
+		SetHardwareConcurrency(16).
+		ScreenColorDepth(24).
+		SetScreenWidth(1900).
+		SetScreenHeight(900).
+		SetTimezone("America/Los_Angeles").
+		SetLanguages("en-US,en").
+		Build()
+
+	bot, err := wrapper.New(deviceInst, universe, username, password, language)
+	if err != nil {
+		panic(err)
+	}
+	attacked, _ := bot.IsUnderAttack()
+	fmt.Println(attacked) // False
+
+	/*deviceInst, err := device.NewBuilder("device_name").
 		SetOsName(device.Windows).
 		SetBrowserName(device.Chrome).
 		SetMemory(8).
@@ -76,7 +98,7 @@ func main() {
 	}
 
 	connect(b)
-	boot.Logout()
+	boot.Logout()*/
 }
 
 func connect(bot *wrapper.OGame) bool {

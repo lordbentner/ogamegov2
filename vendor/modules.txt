@@ -26,7 +26,6 @@ github.com/alaingilbert/ogame/pkg/extractor/v8
 github.com/alaingilbert/ogame/pkg/extractor/v874
 github.com/alaingilbert/ogame/pkg/extractor/v9
 github.com/alaingilbert/ogame/pkg/gameforge
-github.com/alaingilbert/ogame/pkg/gameforge/solvers
 github.com/alaingilbert/ogame/pkg/httpclient
 github.com/alaingilbert/ogame/pkg/ogame
 github.com/alaingilbert/ogame/pkg/parser
